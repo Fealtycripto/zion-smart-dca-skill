@@ -45,13 +45,16 @@ class WeeklyConfig:
     weekly_budget_usd:    float = 100.0   # total weekly budget
     dca_split_pct:        float = 0.70    # % of budget for DCA (Rule 4)
     reserve_split_pct:    float = 0.30    # % of budget for reserve (Rule 4)
-    rsi_buildup_threshold: float = 35.0   # RSI trigger for Buildup (Rule 2)
-    fg_extreme_fear:      int   = 25      # F&G below = 2.0x (Rule 3)
-    fg_fear:              int   = 49      # F&G below = 1.5x (Rule 3)
-    fg_greed:             int   = 74      # F&G above = 1.0x (Rule 3)
-    fg_extreme_greed:     int   = 75      # F&G above = 0.5x (Rule 3)
-    btc_min_pct:          float = 0.40    # Rule 7: never below 40%
-    btc_rebalance_pct:    float = 0.60    # Rule 8: rebalance if above 60%
+    rsi_buildup_threshold:  float = 35.0   # RSI daily trigger for Buildup (Rule 2)
+    rsi_scalingout_threshold: float = 70.0  # RSI weekly trigger for Scaling Out (whitepaper)
+    # Fear & Greed thresholds — exact values from Zion Smart DCA Whitepaper v2.0
+    fg_extreme_fear:      int   = 20      # F&G 0-20  -> 2.0x (Extreme Fear)
+    fg_fear_top:          int   = 40      # F&G 21-40 -> 1.5x (Fear)
+    fg_neutral_top:       int   = 60      # F&G 41-60 -> 1.0x (Neutral)
+    fg_greed_top:         int   = 80      # F&G 61-80 -> 0.5x (Greed)
+    # F&G 81-100 -> 0.25x (Extreme Greed)
+    btc_min_pct:          float = 0.50    # Rule 7: BTC never below 50% (whitepaper: 50%+)
+    btc_rebalance_pct:    float = 0.70    # Rule 8: rebalance if BTC above 70%
 
 
 @dataclass
@@ -118,20 +121,24 @@ class ZionSmartDCA:
     def _get_fg_multiplier(self, fg: int) -> tuple[float, str]:
         """
         Rule 3 — Scale DCA amount by Fear & Greed Index.
-        Extreme Greed (>=75) → 0.5x (accumulate reserve)
-        Greed/Neutral (50-74) → 1.0x (standard)
-        Fear (25-49) → 1.5x (accumulate more)
-        Extreme Fear (<=24) → 2.0x (maximum accumulation)
+        Source: Zion Smart DCA Whitepaper v2.0 (exact thresholds)
+
+        F&G  0-20  (Extreme Fear)  -> 2.0x — maximum accumulation
+        F&G 21-40  (Fear)          -> 1.5x — above-average accumulation
+        F&G 41-60  (Neutral)       -> 1.0x — standard DCA
+        F&G 61-80  (Greed)         -> 0.5x — reduce exposure, build reserve
+        F&G 81-100 (Extreme Greed) -> 0.25x — minimum exposure, max reserve
         """
-        cfg = self.config
-        if fg >= cfg.fg_extreme_greed:
-            return 0.5, f"Extreme Greed (F&G={fg} >= {cfg.fg_extreme_greed}) → 0.5x — reducing exposure"
-        elif fg >= cfg.fg_fear + 1:
-            return 1.0, f"Neutral/Greed (F&G={fg}) → 1.0x — standard DCA"
-        elif fg >= cfg.fg_extreme_fear:
-            return 1.5, f"Fear (F&G={fg} in 25-49) → 1.5x — increasing accumulation"
-        else:
-            return 2.0, f"Extreme Fear (F&G={fg} <= {cfg.fg_extreme_fear}) → 2.0x — maximum accumulation"
+        if fg <= self.config.fg_extreme_fear:      # 0-20
+            return 2.0,  f"Extreme Fear (F&G={fg}, 0-20) -> 2.0x — maximum accumulation"
+        elif fg <= self.config.fg_fear_top:         # 21-40
+            return 1.5,  f"Fear (F&G={fg}, 21-40) -> 1.5x — above-average accumulation"
+        elif fg <= self.config.fg_neutral_top:      # 41-60
+            return 1.0,  f"Neutral (F&G={fg}, 41-60) -> 1.0x — standard DCA"
+        elif fg <= self.config.fg_greed_top:        # 61-80
+            return 0.5,  f"Greed (F&G={fg}, 61-80) -> 0.5x — reducing exposure, building reserve"
+        else:                                        # 81-100
+            return 0.25, f"Extreme Greed (F&G={fg}, 81-100) -> 0.25x — minimum exposure, consider Scaling Out"
 
     # ─── Rule 2: Buildup Eligibility ───────────────────────────────────────
     def _is_buildup_eligible(self, rsi: float) -> tuple[bool, str]:
@@ -141,8 +148,8 @@ class ZionSmartDCA:
         """
         threshold = self.config.rsi_buildup_threshold
         if rsi <= threshold:
-            return True, f"RSI {rsi:.1f} <= {threshold} → Buildup ELIGIBLE (oversold)"
-        return False, f"RSI {rsi:.1f} > {threshold} → Standard DCA (not oversold)"
+            return True, f"RSI {rsi:.1f} <= {threshold} -> Buildup ELIGIBLE (oversold)"
+        return False, f"RSI {rsi:.1f} > {threshold} -> Standard DCA (not oversold)"
 
     # ─── Rule 7 & 8: Portfolio Guardrails ──────────────────────────────────
     def _check_portfolio_balance(self, btc_pct: float) -> list[str]:
@@ -183,19 +190,50 @@ class ZionSmartDCA:
         return dca_amount, reserve_amt
 
     # ─── Rule 9: Scaling Out ───────────────────────────────────────────────
-    def check_scaling_out(self, total_invested: float, portfolio_value: float) -> Optional[str]:
+    def check_scaling_out(self, total_invested: float, portfolio_value: float,
+                          rsi_weekly: Optional[float] = None) -> Optional[str]:
         """
-        Rule 9 — Scaling Out: if portfolio grew 4x vs invested, take 40% profit.
-        Reinject 20% back into DCA budget.
+        Rule 9 — Scaling Out: progressive profit-taking as defined in Whitepaper v2.0.
+
+        Trigger: RSI weekly > 70 (overbought on higher timeframe)
+        Scale:
+          +50%  profit -> sell 10% of position
+          +100% profit -> sell 15%
+          +200% profit -> sell 15%
+          +300% profit -> sell 20%
+          +500% profit -> sell 10%
+          Remaining 30% -> HODL (generational wealth)
         """
-        if portfolio_value >= total_invested * 4:
-            take_profit = portfolio_value * 0.40
-            reinject    = take_profit * 0.20
-            return (
-                f"Rule 9 TRIGGERED: Portfolio {portfolio_value:.0f} >= 4x invested ({total_invested:.0f}). "
-                f"Recommend: Take ${take_profit:.0f} profit, reinject ${reinject:.0f} into DCA."
+        messages = []
+
+        # RSI weekly trigger
+        if rsi_weekly and rsi_weekly > self.config.rsi_scalingout_threshold:
+            messages.append(
+                f"!!  SCALING OUT SIGNAL: RSI Weekly {rsi_weekly:.1f} > 70 — overbought on higher timeframe. "
+                f"Evaluate partial realization per whitepaper table."
             )
-        return None
+
+        if total_invested <= 0:
+            return "\n".join(messages) if messages else None
+
+        profit_pct = (portfolio_value - total_invested) / total_invested * 100
+        scaling_table = [
+            (50,  10,  "First"),
+            (100, 15,  "Second"),
+            (200, 15,  "Third"),
+            (300, 20,  "Fourth"),
+            (500, 10,  "Fifth"),
+        ]
+        for threshold, pct, label in scaling_table:
+            if profit_pct >= threshold:
+                sell_usd = portfolio_value * (pct / 100)
+                messages.append(
+                    f"[CHART] {label} scaling out trigger: +{profit_pct:.0f}% profit -> sell {pct}% "
+                    f"(${sell_usd:,.0f}). Remaining 30% = permanent HODL."
+                )
+                break  # Only show the highest applicable tier
+
+        return "\n".join(messages) if messages else None
 
     # ─── Main Decision Engine ───────────────────────────────────────────────
     def evaluate(self, signals: MarketSignals) -> StrategyDecision:
@@ -226,7 +264,7 @@ class ZionSmartDCA:
         rules.append("Rule 4: Reserve First split (70/30)")
         if multiplier < 1.0:
             reasoning.append(
-                f"Rule 5: Greed phase → surplus ${cfg.weekly_budget_usd * cfg.dca_split_pct * (1 - multiplier):.2f} "
+                f"Rule 5: Greed phase -> surplus ${cfg.weekly_budget_usd * cfg.dca_split_pct * (1 - multiplier):.2f} "
                 f"auto-routed to reserve"
             )
             rules.append("Rule 5: Auto-reserve replenishment in greed")
@@ -251,14 +289,23 @@ class ZionSmartDCA:
         rules.append("Rule 12: Monthly review (check BTC%, reserve, adjust budget)")
 
         # Determine DCA type
-        if multiplier == 2.0 and is_buildup:
+        if is_buildup and multiplier == 2.0:
             dca_type = DCAType.BUILDUP_2X
-        elif multiplier == 1.5 and is_buildup:
+        elif is_buildup and multiplier == 1.5:
             dca_type = DCAType.BUILDUP_15X
-        elif multiplier == 0.5:
-            dca_type = DCAType.BUILDUP_05X
+        elif multiplier <= 0.5:
+            dca_type = DCAType.BUILDUP_05X   # reserve building phase
         else:
             dca_type = DCAType.DCA_NORMAL
+
+        # Rule 9 advisory: Extreme Greed warning
+        if multiplier == 0.25:
+            warnings.append(
+                "Rule 9 ADVISORY: F&G in Extreme Greed (81-100). "
+                "Review Scaling Out table from whitepaper. "
+                "Consider partial realization if RSI weekly > 70."
+            )
+            rules.append("Rule 9: Scaling Out advisory (Extreme Greed zone)")
 
         btc_amount = dca_amount / signals.btc_price_usd
 
@@ -285,41 +332,38 @@ if __name__ == "__main__":
 
     engine = ZionSmartDCA(config=WeeklyConfig(weekly_budget_usd=100.0))
 
-    # Scenario 1: Extreme Fear + Buildup (05/Jun/2026 — real event)
-    print("=" * 60)
-    print("SCENARIO 1: Extreme Fear + Buildup (05/Jun/2026 real)")
-    print("=" * 60)
-    signals_buildup = MarketSignals(
-        btc_price_usd=60500.0,
-        fear_greed_index=11,
-        rsi_14d=33.5,
-        btc_portfolio_pct=0.54,
-    )
-    result = engine.evaluate(signals_buildup)
-    print(json.dumps(result.to_dict(), indent=2))
+    scenarios = [
+        ("Extreme Fear + Buildup (05/Jun/2026 real)",
+         MarketSignals(btc_price_usd=60500.0, fear_greed_index=11, rsi_14d=33.5, btc_portfolio_pct=0.54)),
+        ("Fear zone (F&G=30)",
+         MarketSignals(btc_price_usd=65000.0, fear_greed_index=30, rsi_14d=42.0, btc_portfolio_pct=0.52)),
+        ("Neutral (F&G=50)",
+         MarketSignals(btc_price_usd=70000.0, fear_greed_index=50, rsi_14d=50.0, btc_portfolio_pct=0.54)),
+        ("Greed (F&G=70) — reduce exposure",
+         MarketSignals(btc_price_usd=88000.0, fear_greed_index=70, rsi_14d=65.0, btc_portfolio_pct=0.60)),
+        ("Extreme Greed (F&G=85) — minimum exposure + Scaling Out alert",
+         MarketSignals(btc_price_usd=110000.0, fear_greed_index=85, rsi_14d=75.0, btc_portfolio_pct=0.68)),
+    ]
 
-    # Scenario 2: Extreme Greed — accumulate reserve
-    print("\n" + "=" * 60)
-    print("SCENARIO 2: Extreme Greed — protect & accumulate reserve")
-    print("=" * 60)
-    signals_greed = MarketSignals(
-        btc_price_usd=95000.0,
-        fear_greed_index=82,
-        rsi_14d=71.0,
-        btc_portfolio_pct=0.65,
-    )
-    result2 = engine.evaluate(signals_greed)
-    print(json.dumps(result2.to_dict(), indent=2))
+    for title, signals in scenarios:
+        print("\n" + "=" * 65)
+        print(f"  {title}")
+        print("=" * 65)
+        result = engine.evaluate(signals)
+        d = result.to_dict()
+        print(f"  Decision: {d['decision']['action']} | {d['decision']['type']} | {d['decision']['multiplier']}x")
+        print(f"  Amount:   ${d['decision']['amount_usd']:.2f} BTC | Reserve: ${d['decision']['reserve_contribution_usd']:.2f}")
+        print(f"  F&G: {d['market']['fear_greed_index']} | RSI: {d['market']['rsi_14d']}")
+        for r in d['reasoning']:
+            print(f"    >> {r}")
+        for w in d['warnings']:
+            print(f"    !! {w}")
 
-    # Scenario 3: Neutral market
-    print("\n" + "=" * 60)
-    print("SCENARIO 3: Neutral market — standard DCA")
-    print("=" * 60)
-    signals_neutral = MarketSignals(
-        btc_price_usd=62900.0,
-        fear_greed_index=48,
-        rsi_14d=42.0,
-        btc_portfolio_pct=0.54,
+    # Test scaling out
+    print("\n" + "=" * 65)
+    print("  SCALING OUT CHECK (portfolio at +150% profit, RSI weekly=72)")
+    print("=" * 65)
+    msg = engine.check_scaling_out(
+        total_invested=5000, portfolio_value=12500, rsi_weekly=72.0
     )
-    result3 = engine.evaluate(signals_neutral)
-    print(json.dumps(result3.to_dict(), indent=2))
+    print(f"  {msg}")
