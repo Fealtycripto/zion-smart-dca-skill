@@ -54,21 +54,31 @@ Using **real Fear & Greed data** from [Alternative.me](https://alternative.me/cr
 
 | Metric | Zion Smart DCA | Standard DCA |
 |--------|---------------|-------------|
-| BTC Accumulated | **0.033661 BTC** | 0.023624 BTC |
-| Extra BTC vs Standard | **+0.010037 BTC (+42.5%)** | — |
-| Portfolio Value | $2,123 | $1,490 |
-| Reserve Available | **$230 (ready to deploy)** | N/A |
+| BTC Accumulated | **0.031782 BTC** | 0.023624 BTC |
+| Extra BTC vs Standard | **+0.008158 BTC (+34.5%)** | — |
+| Portfolio Value | $2,005 | $1,490 |
+| Reserve Available | **$265 (ready to deploy)** | N/A |
 | Buildup Events | **2** (F&G 23 + F&G 10) | N/A |
 
 **Why such a big difference?** Because the market spent **94% of weeks in Fear or Extreme Fear** during this period:
 
 | Multiplier Zone | Weeks | F&G Range | Weekly Buy |
 |----------------|-------|-----------|------------|
-| 🔴 Extreme Fear (2x) | **10** | F&G 5–24 | $140 |
-| 🟡 Fear (1.5x) | **6** | F&G 25–49 | $105 |
-| ⚪ Neutral (1x) | **1** | F&G 50–74 | $70 |
+| 🔴 Extreme Fear (2x) | **8** | F&G 0–20 | $140 |
+| 🟡 Fear (1.5x) | **7** | F&G 21–40 | $105 |
+| ⚪ Neutral (1x) | **2** | F&G 41–60 | $70 |
 
-> Standard DCA bought $70 every single week. Zion Smart DCA bought $140 during 10 weeks of Extreme Fear — accumulating **42.5% more Bitcoin** for the same weekly budget.
+> Standard DCA bought $70 every single week. Zion Smart DCA averaged **$131.76/week** — buying $140 during 8 weeks of Extreme Fear — accumulating **34.5% more Bitcoin** for the same weekly budget.
+
+**Multiplier table (Whitepaper v2.0 — exact thresholds):**
+
+| F&G Index | Classification | Multiplier | Weekly Buy (base $100) |
+|-----------|---------------|------------|------------------------|
+| 0–20 | 😱 Extreme Fear | **2.0x** | $140 |
+| 21–40 | 😰 Fear | **1.5x** | $105 |
+| 41–60 | 😐 Neutral | **1.0x** | $70 |
+| 61–80 | 😊 Greed | **0.5x** | $35 |
+| 81–100 | 🤑 Extreme Greed | **0.25x** | $17.50 |
 
 **Data sources:**
 - BTC price: [Yahoo Finance](https://finance.yahoo.com/quote/BTC-USD/) via yfinance

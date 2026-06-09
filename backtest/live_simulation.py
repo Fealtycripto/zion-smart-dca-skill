@@ -53,17 +53,20 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def get_multiplier(fg: float) -> float:
-    if fg >= 75:  return 0.5
-    elif fg >= 50: return 1.0
-    elif fg >= 25: return 1.5
-    else:          return 2.0
+    """Exact thresholds from Zion Smart DCA Whitepaper v2.0."""
+    if fg <= 20:   return 2.0   # Extreme Fear  (0-20)
+    elif fg <= 40: return 1.5   # Fear          (21-40)
+    elif fg <= 60: return 1.0   # Neutral       (41-60)
+    elif fg <= 80: return 0.5   # Greed         (61-80)
+    else:          return 0.25  # Extreme Greed (81-100)
 
 
 def get_fg_label(fg: float) -> str:
-    if fg >= 75:  return "Extreme Greed"
-    elif fg >= 50: return "Neutral/Greed"
-    elif fg >= 25: return "Fear"
-    else:          return "EXTREME FEAR"
+    if fg <= 20:   return "EXTREME FEAR"
+    elif fg <= 40: return "Fear"
+    elif fg <= 60: return "Neutral"
+    elif fg <= 80: return "Greed"
+    else:          return "EXTREME GREED"
 
 
 def run_simulation(df_weekly: pd.DataFrame) -> pd.DataFrame:
