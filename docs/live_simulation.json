@@ -1,0 +1,39 @@
+{
+  "simulation_type": "Live Period \u2014 Real Market Data",
+  "period": "2026-02-13 to 2026-06-08",
+  "weekly_budget_usd": 100.0,
+  "asset": "BTC only",
+  "weeks_simulated": 17,
+  "zion_smart_dca": {
+    "total_invested": 1820.0,
+    "btc_accumulated": 0.02576526,
+    "portfolio_value": 1625.55,
+    "return_pct": -10.68,
+    "reserve_usd": 300.0,
+    "buildup_events": 2
+  },
+  "standard_dca": {
+    "total_invested": 1700.0,
+    "btc_accumulated": 0.02362371,
+    "portfolio_value": 1490.43,
+    "return_pct": -12.33
+  },
+  "buildup_events_detail": [
+    {
+      "date": "2026-06-01",
+      "btc_price": 71319.77,
+      "fear_greed": 36,
+      "fg_label": "Fear",
+      "rsi": 30.2,
+      "deployed_usd": 210.0
+    },
+    {
+      "date": "2026-06-08",
+      "btc_price": 63090.59,
+      "fear_greed": 27,
+      "fg_label": "Fear",
+      "rsi": 26.1,
+      "deployed_usd": 210.0
+    }
+  ]
+}
