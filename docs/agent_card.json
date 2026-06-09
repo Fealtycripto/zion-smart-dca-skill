@@ -1,0 +1,88 @@
+{
+  "name": "Zion Smart DCA",
+  "version": "3.0",
+  "description": "An intelligent Bitcoin accumulation agent using CoinMarketCap Fear & Greed Index and RSI signals to dynamically scale weekly DCA purchases. Implements 12 formalized rules including the Reserve First principle for capital-efficient accumulation.",
+  "author": "Rony Costa (@Fealtycripto)",
+  "repository": "https://github.com/Fealtycripto/zion-smart-dca-skill",
+  "license": "MIT",
+  "created_at": "2026-06-09",
+  "hackathon": "BNB Hack 2026 \u2014 Crypto Intelligence Agent Track",
+  "capabilities": [
+    "btc_accumulation_strategy",
+    "fear_greed_analysis",
+    "rsi_signal_detection",
+    "reserve_management",
+    "portfolio_rebalancing",
+    "backtest_execution"
+  ],
+  "data_sources": [
+    "CoinMarketCap Agent Hub (Fear & Greed, RSI, Price)",
+    "Yahoo Finance (historical BTC OHLCV)"
+  ],
+  "input_schema": {
+    "weekly_budget_usd": {
+      "type": "float",
+      "required": true,
+      "default": 100.0
+    },
+    "btc_portfolio_pct": {
+      "type": "float",
+      "required": false,
+      "default": 0.54
+    },
+    "reserve_usd": {
+      "type": "float",
+      "required": false,
+      "default": 0.0
+    }
+  },
+  "output_schema": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "BUY",
+        "SKIP",
+        "SELL"
+      ]
+    },
+    "dca_type": {
+      "type": "string"
+    },
+    "multiplier": {
+      "type": "float"
+    },
+    "amount_usd": {
+      "type": "float"
+    },
+    "btc_amount": {
+      "type": "float"
+    },
+    "reserve_contribution_usd": {
+      "type": "float"
+    },
+    "reasoning": {
+      "type": "array"
+    },
+    "rules_applied": {
+      "type": "array"
+    }
+  },
+  "performance": {
+    "backtest_period": "2021-01-01 to 2026-06-09",
+    "total_weeks": 284,
+    "total_return_pct": 58.3,
+    "vs_standard_dca": "+7.6pp",
+    "sharpe_ratio": 1.792,
+    "sortino_ratio": 4.461,
+    "max_drawdown_pct": -45.5,
+    "win_rate_pct": 59.0,
+    "profit_factor": 2.418,
+    "buildup_events": 29,
+    "live_trades": 57,
+    "live_since": "2026-02-01"
+  },
+  "networks": {
+    "primary": "BNB Smart Chain Testnet (chain_id: 97)",
+    "mainnet": "BNB Smart Chain (chain_id: 56)"
+  }
+}
