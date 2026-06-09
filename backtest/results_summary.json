@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-06-09T13:12:27.145107",
+  "config": {
+    "weekly_budget": 100.0,
+    "dca_split": 0.7,
+    "reserve_split": 0.3,
+    "rsi_buildup_threshold": 35.0,
+    "fg_extreme_fear": 25,
+    "fg_greed": 49,
+    "fg_extreme_greed": 75,
+    "start_date": "2021-01-01",
+    "end_date": "2026-06-09"
+  },
+  "zion_smart_dca": {
+    "strategy": "Zion Smart DCA v3.0",
+    "total_invested": 26215.0,
+    "final_value": 41493.21,
+    "total_return_pct": 58.28,
+    "cagr_pct": 8.77,
+    "sharpe_ratio": 1.792,
+    "sortino_ratio": 4.461,
+    "max_drawdown_pct": -45.48,
+    "win_rate_pct": 59.01,
+    "profit_factor": 2.418,
+    "total_weeks": 284,
+    "buildup_events": 29
+  },
+  "standard_dca": {
+    "strategy": "Standard DCA",
+    "total_invested": 28400.0,
+    "final_value": 42806.44,
+    "total_return_pct": 50.73,
+    "cagr_pct": 7.8,
+    "sharpe_ratio": 1.699,
+    "sortino_ratio": 3.945,
+    "max_drawdown_pct": -46.37,
+    "win_rate_pct": 59.36,
+    "profit_factor": 2.275,
+    "total_weeks": 284,
+    "buildup_events": 0
+  },
+  "buy_and_hold": {
+    "total_invested": 28400.0,
+    "final_value": 56042.09,
+    "total_return": 97.33,
+    "btc_held": 0.88827963
+  }
+}
