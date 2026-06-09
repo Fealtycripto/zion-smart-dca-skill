@@ -117,6 +117,25 @@ zion-smart-dca-skill/
 - **BNB AI Agent SDK** (ERC-8004 on-chain identity)
 - **yfinance** for historical BTC data
 
+## On-chain Identity (ERC-8004)
+
+This agent is registered on **BNB Smart Chain Testnet** via the ERC-8004 standard.
+
+| Field | Value |
+|-------|-------|
+| **Wallet** | `0x4E9feDB6DFb93fe7Ae98E2d2Bfe4fb6398A568bd` |
+| **TX Hash** | [`0x5b36774865ad295891d898ccca74b88ded502a593fa5624d0671e1cf37afd558`](https://testnet.bscscan.com/tx/0x5b36774865ad295891d898ccca74b88ded502a593fa5624d0671e1cf37afd558) |
+| **Network** | BSC Testnet (chain_id: 97) |
+| **Standard** | ERC-8004 (Trustless Agent Identity) |
+
+```bash
+# Register agent on BNB testnet
+python src/agent.py --register
+
+# View agent identity card
+python src/agent.py --info
+```
+
 ## Author
 
 **Rony Costa** ([@Fealtycripto](https://github.com/Fealtycripto))  
