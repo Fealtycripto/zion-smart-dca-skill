@@ -130,7 +130,14 @@ def register_on_chain():
     Uses paymaster for gas-free registration on testnet.
     """
     private_key = os.getenv("AGENT_PRIVATE_KEY", "")
-    rpc_url     = os.getenv("BNB_RPC_URL", "https://bsc-testnet-rpc.publicnode.com")
+
+    # Lista de RPCs BNB testnet — tenta em ordem até um funcionar
+    RPC_LIST = [
+        os.getenv("BNB_RPC_URL", "https://data-seed-prebsc-1-s1.bnbchain.org:8545"),
+        "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
+        "https://data-seed-prebsc-2-s1.bnbchain.org:8545",
+        "https://bsc-testnet-rpc.publicnode.com",
+    ]
 
     if not private_key:
         print("\n[INFO] No AGENT_PRIVATE_KEY in .env")
@@ -145,44 +152,69 @@ def register_on_chain():
         import bnbagent
         from bnbagent import ERC8004Agent, BNBAgentConfig, NetworkConfig, EVMWalletProvider
 
-        print(f"\nConnecting to BNB testnet: {rpc_url}")
-        print(f"BNBAgent SDK version: {bnbagent.__version__}")
-
-        # Network config — BNB testnet (chain 97)
-        network = NetworkConfig(
-            rpc_url=rpc_url,
-            chain_id=97,
-            name="BSC Testnet",
-        )
+        print(f"\nBNBAgent SDK version: {bnbagent.__version__}")
 
         # Wallet provider
         wallet = EVMWalletProvider(
+            password="zion-dca-hackathon",
             private_key=private_key,
-            network=network,
+            persist=False,
         )
+        print(f"Wallet address: {wallet.address}")
 
-        # Agent config
-        config = BNBAgentConfig(
-            name=AGENT_CARD["name"],
-            version=AGENT_CARD["version"],
-            description=AGENT_CARD["description"],
-            capabilities=AGENT_CARD["capabilities"],
-            repository=AGENT_CARD["repository"],
-            wallet_provider=wallet,
-            network=network,
+        # ERC-8004 agent
+        agent = ERC8004Agent(wallet_provider=wallet, network="bsc-testnet")
+
+        # Gera o Agent URI (metadados on-chain)
+        from bnbagent import AgentEndpoint
+        agent_uri = agent.generate_agent_uri(
+            name        = "Zion Smart DCA",
+            description = "BTC accumulation skill using CMC Fear & Greed + RSI signals.",
+            endpoints   = [AgentEndpoint(
+                name     = "GitHub",
+                endpoint = "https://github.com/Fealtycripto/zion-smart-dca-skill",
+            )],
         )
+        print(f"Agent URI generated ({len(agent_uri)} chars)")
 
-        # ERC-8004 agent instance
-        agent = ERC8004Agent(config=config)
-
-        print("Registering agent identity (ERC-8004) on BNB testnet...")
-        result = agent.register()
+        print("Registering agent (ERC-8004) on BNB testnet...")
+        result = agent.register_agent(
+            agent_uri = agent_uri,
+            metadata  = [
+                {"key": "version",    "value": AGENT_CARD["version"]},
+                {"key": "author",     "value": AGENT_CARD["author"]},
+                {"key": "hackathon",  "value": AGENT_CARD["hackathon"]},
+                {"key": "repository", "value": AGENT_CARD["repository"]},
+            ]
+        )
 
         print(f"\nAgent registered successfully!")
-        print(f"  Agent ID:  {result.agent_id}")
-        print(f"  TX Hash:   {result.tx_hash}")
+        print(f"  Result: {result}")
+
+        # Extrai campos do dict
+        agent_id = result.get("agent_id") or result.get("tokenId") or result.get("id") or str(result)
+        tx_hash  = result.get("tx_hash") or result.get("transactionHash") or result.get("hash") or "pending"
+
+        print(f"  Agent ID:  {agent_id}")
+        print(f"  TX Hash:   {tx_hash}")
         print(f"  Network:   BSC Testnet (chain 97)")
-        print(f"  Explorer:  https://testnet.bscscan.com/tx/{result.tx_hash}")
+        if tx_hash and tx_hash != "pending":
+            print(f"  Explorer:  https://testnet.bscscan.com/tx/{tx_hash}")
+
+        # Salva resultado
+        reg_path = Path(__file__).parent.parent / "docs" / "registration.json"
+        reg_data = {
+            "registered_at":  datetime.now().isoformat(),
+            "wallet_address": wallet.address,
+            "agent_id":       agent_id,
+            "tx_hash":        tx_hash,
+            "network":        "BSC Testnet (chain_id: 97)",
+            "explorer":       f"https://testnet.bscscan.com/tx/{tx_hash}",
+            "full_result":    result,
+        }
+        reg_path.write_text(json.dumps(reg_data, indent=2))
+        print(f"\nRegistration saved to {reg_path}")
+        return result
 
         # Save registration result
         reg_path = Path(__file__).parent.parent / "docs" / "registration.json"
