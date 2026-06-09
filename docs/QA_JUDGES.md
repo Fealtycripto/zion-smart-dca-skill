@@ -114,14 +114,14 @@ Cost:   Included in CMC Basic plan
 
 ## 🧠 STRATEGY METHODOLOGY
 
-### Q: Why does the multiplier have only 4 levels? Isn't it too simplistic?
+### Q: Why does the multiplier have only 5 levels? Isn't it too simplistic?
 
 **Design choice, not a limitation.**
 
-4 discrete levels (0.5x / 1.0x / 1.5x / 2.0x) were chosen deliberately because:
+5 discrete levels (0.25x / 0.5x / 1.0x / 1.5x / 2.0x) were chosen deliberately because:
 1. **Psychological clarity** — users need to understand exactly what the system is doing
 2. **Execution discipline** — "buy double this week" is actionable; a continuous function isn't
-3. **Backtested stability** — the 4-band system performs consistently across all market cycles
+3. **Backtested stability** — the 5-band system performs consistently across all market cycles
 
 **For v3.2 roadmap:** A continuous multiplier function is planned:
 ```python
@@ -152,7 +152,7 @@ to those positions — the skill formalizes the BTC implementation first.
 
 ---
 
-### Q: How do you justify -10.8% ROI in the live simulation? You lost money.
+### Q: How do you justify -10.5% ROI in the live simulation? You lost money.
 
 **Context is everything.**
 
@@ -160,14 +160,14 @@ The period Feb–Jun 2026 coincided with a significant BTC correction.
 Any strategy holding BTC would be negative in USD terms during this period.
 
 The relevant comparisons:
-1. **vs Standard DCA:** Zion lost -10.8% vs Standard DCA's -12.3% → **better performance**
-2. **BTC accumulated:** 0.033661 vs 0.023624 → **+42.5% more sats** (what matters long-term)
+1. **vs Standard DCA:** Zion lost -10.5% vs Standard DCA's -12.3% → **better performance**
+2. **BTC accumulated:** 0.031782 vs 0.023624 → **+34.5% more sats** (what matters long-term)
 3. **Reserve:** $230 still available, ready to deploy at next capitulation event
 4. **The strategy is designed for 3–5 year cycles, not 4-month snapshots**
 
 > "In a bear market, the goal is not to be profitable in USD — it's to accumulate
 > as many sats as possible at the lowest average price. Zion Smart DCA does this
-> 42.5% better than Standard DCA during market corrections."
+> 34.5% better than Standard DCA during market corrections."
 
 ---
 
@@ -179,7 +179,7 @@ It deploys 50% of the reserve in addition to the standard DCA allocation.
 **Live simulation Buildup events:**
 | Date | BTC Price | F&G | RSI | Deployed | Outcome |
 |------|-----------|-----|-----|----------|---------|
-| 2026-06-01 | $71,320 | 23 | 30.2 | $280 | BTC dropped further to $63k → bought more next week |
+| 2026-06-01 | $71,320 | 23 | 30.2 | $210 | BTC dropped further to $63k → bought more next week |
 | 2026-06-08 | $63,091 | 10 | 26.1 | $280 | Most recent — lowest price in the period |
 
 > The second Buildup on Jun 8 at $63,091 with F&G=10 is a textbook capitulation entry.
@@ -292,11 +292,11 @@ Three reasons:
    DCA requires $100/week — accessible to anyone with regular income.
 
 2. **Psychological sustainability:** B&H experienced -77.3% drawdown in 2022.
-   Zion DCA's max drawdown was -45.5%. Studies show 90%+ of retail investors
+   Zion DCA's max drawdown was -44.6%. Studies show 90%+ of retail investors
    sell during -50%+ drawdowns. A strategy only works if you can stick to it.
 
 3. **Correct comparison:** vs **Standard DCA** (the real alternative for regular investors),
-   Zion outperforms: +195% vs +66% total return, Sharpe 1.84 vs 1.12.
+   Zion outperforms: +56.4% vs +50.7% total return, Sharpe 1.768 vs 1.12.
 
 ---
 

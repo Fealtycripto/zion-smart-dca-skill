@@ -29,7 +29,7 @@ WEEKLY_BUDGET = 100.0
 DCA_SPLIT     = 0.70   # 70% goes to BTC
 RESERVE_SPLIT = 0.30   # 30% to reserve
 RSI_BUILDUP   = 35.0
-FG_THRESHOLDS = {"extreme_fear": 25, "fear": 49, "greed": 74}
+
 
 DARK_BG = "#0D1117"
 CARD_BG = "#161B22"

@@ -111,7 +111,7 @@ class ZionSmartDCA:
     - Buildup trigger when RSI <= 35 (Rule 2)
     - Reserve First, Scale Later (Rule 4)
     - Auto-reserve replenishment in greed phases (Rule 5)
-    - Portfolio allocation guardrails: 40-60% BTC (Rules 7-8)
+    - Portfolio allocation guardrails: 50-70% BTC (Rules 7-8)
     """
 
     def __init__(self, config: Optional[WeeklyConfig] = None):
@@ -154,18 +154,18 @@ class ZionSmartDCA:
     # ─── Rule 7 & 8: Portfolio Guardrails ──────────────────────────────────
     def _check_portfolio_balance(self, btc_pct: float) -> list[str]:
         """
-        Rule 7 — NEVER let BTC fall below 40% of portfolio.
-        Rule 8 — Consider rebalancing if BTC exceeds 60%.
+        Rule 7 — NEVER let BTC fall below 50% of portfolio.
+        Rule 8 — Consider rebalancing if BTC exceeds 70%.
         """
         warnings = []
         if btc_pct < self.config.btc_min_pct:
             warnings.append(
-                f"CRITICAL (Rule 7): BTC at {btc_pct:.1%} < 40% minimum! "
+                f"CRITICAL (Rule 7): BTC at {btc_pct:.1%} < 50% minimum! "
                 f"Prioritize BTC rebuying immediately."
             )
         elif btc_pct > self.config.btc_rebalance_pct:
             warnings.append(
-                f"REBALANCE (Rule 8): BTC at {btc_pct:.1%} > 60%. "
+                f"REBALANCE (Rule 8): BTC at {btc_pct:.1%} > 70%. "
                 f"Consider partial rebalancing to stablecoins or other assets."
             )
         return warnings
@@ -275,8 +275,8 @@ class ZionSmartDCA:
         # Rule 7 & 8: Portfolio guardrails
         port_warnings = self._check_portfolio_balance(signals.btc_portfolio_pct)
         warnings.extend(port_warnings)
-        rules.append("Rule 7: BTC minimum 40% check")
-        rules.append("Rule 8: BTC rebalance 60% check")
+        rules.append("Rule 7: BTC minimum 50% check")
+        rules.append("Rule 8: BTC rebalance 70% check")
 
         # Rule 10: No emotion — system decides, not feelings
         rules.append("Rule 10: No timing, no emotion — follow the system")

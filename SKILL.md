@@ -4,7 +4,7 @@ An intelligent DCA strategy that dynamically adjusts weekly BTC purchase amounts
 based on CMC Fear & Greed Index and RSI signals, with a built-in reserve that
 auto-deploys during market capitulation events.
 
-**Proven over 5 years of backtesting: +195% vs standard DCA | Sharpe 1.84 | Max DD -23.4%**
+**Proven over 5 years of backtesting: +56.4% vs standard DCA | Sharpe 1.768 | Max DD -44.6%**
 **57 real transactions since February 2026 — this strategy is live, not theoretical.**
 
 ## Prerequisites
@@ -35,8 +35,8 @@ python backtest/backtest.py --symbol BTC --days 1825 --budget 100
 python backtest/backtest.py \
   --budget 100 \
   --rsi-threshold 35 \
-  --fg-extreme-fear 25 \
-  --fg-extreme-greed 75
+  --fg-extreme-fear 20 \
+  --fg-extreme-greed 80
 ```
 
 ## Parameters
@@ -45,21 +45,21 @@ python backtest/backtest.py \
 |-----------|---------|-------------|
 | `--budget` | 100 | Weekly DCA budget in USD |
 | `--rsi-threshold` | 35 | RSI level to trigger Buildup mode |
-| `--fg-extreme-fear` | 25 | F&G below this = 2.0x multiplier |
-| `--fg-extreme-greed` | 75 | F&G above this = 0.5x multiplier |
+| `--fg-extreme-fear` | 20 | F&G below this = 2.0x multiplier |
+| `--fg-extreme-greed` | 80 | F&G above this = 0.25x multiplier |
 | `--dca-split` | 0.70 | % of budget for DCA (rest goes to reserve) |
 
 ## Output / Performance Metrics (5-Year Backtest 2021–2026)
 
 | Metric | Value |
 |--------|-------|
-| Total Return | **+195%** vs +66% standard DCA |
-| Annualized Return | 24.3% |
-| Sharpe Ratio | **1.84** |
+| Total Return | **+56.4%** vs +50.7% standard DCA |
+| Annualized Return | 9.4% |
+| Sharpe Ratio | **1.768** |
 | Sortino Ratio | 2.47 |
-| Max Drawdown | **-23.4%** |
-| Win Rate | **67%** |
-| Profit Factor | **2.31** |
+| Max Drawdown | **-44.6%** |
+| Win Rate | **59.0%** |
+| Profit Factor | **2.400** |
 | Total Trades | 260 (weekly, 5 years) |
 | Buildup Events Triggered | 18 |
 | Reserve Deployed | 6 times (all at market bottoms) |
@@ -84,7 +84,7 @@ python backtest/backtest.py \
     "rsi_14d": 33.5
   },
   "reasoning": [
-    "Extreme Fear (F&G=11 <= 25) → 2.0x — maximum accumulation",
+    "Extreme Fear (F&G=11 <= 20) → 2.0x — maximum accumulation",
     "RSI 33.5 <= 35.0 → Buildup ELIGIBLE (oversold)",
     "Reserve First: 70% DCA + 30% reserve"
   ],
@@ -107,12 +107,12 @@ python backtest/backtest.py \
 |---|------|---------|
 | 1 | Weekly DCA Base | Every week |
 | 2 | RSI Buildup | RSI ≤ 35 |
-| 3 | F&G Multiplier | 0.5x–2.0x |
+| 3 | F&G Multiplier | 0.25x–2.0x |
 | 4 | Reserve First | Always (70/30 split) |
 | 5 | Auto-Reserve | Greed surplus |
 | 6 | Income Scaling | Income change |
-| 7 | BTC Floor | < 40% portfolio |
-| 8 | Rebalance | > 60% portfolio |
+| 7 | BTC Floor | < 50% portfolio |
+| 8 | Rebalance | > 70% portfolio |
 | 9 | Scaling Out | 4x portfolio value |
 | 10 | No Emotion | System-driven |
 | 11 | Mandatory Log | Every trade |

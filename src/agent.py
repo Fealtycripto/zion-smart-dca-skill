@@ -216,18 +216,6 @@ def register_on_chain():
         print(f"\nRegistration saved to {reg_path}")
         return result
 
-        # Save registration result
-        reg_path = Path(__file__).parent.parent / "docs" / "registration.json"
-        reg_data = {
-            "registered_at": datetime.now().isoformat(),
-            "agent_id":      result.agent_id,
-            "tx_hash":       result.tx_hash,
-            "network":       "BSC Testnet (chain_id: 97)",
-            "explorer":      f"https://testnet.bscscan.com/tx/{result.tx_hash}",
-        }
-        reg_path.write_text(json.dumps(reg_data, indent=2))
-        print(f"\nRegistration data saved to {reg_path}")
-        return result
 
     except ImportError as e:
         print(f"[ERROR] BNBAgent SDK import failed: {e}")

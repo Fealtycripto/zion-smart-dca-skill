@@ -26,10 +26,11 @@ Most retail investors lose money not because they pick the wrong assets — but 
 
 | Signal | Action |
 |--------|--------|
-| Fear & Greed ≤ 24 (Extreme Fear) | Buy **2.0x** — maximum accumulation |
-| Fear & Greed 25–49 (Fear) | Buy **1.5x** — increased accumulation |
-| Fear & Greed 50–74 (Neutral) | Buy **1.0x** — standard DCA |
-| Fear & Greed ≥ 75 (Extreme Greed) | Buy **0.5x** — protect & build reserve |
+| Fear & Greed 0–20 (Extreme Fear) | Buy **2.0x** — maximum accumulation |
+| Fear & Greed 21–40 (Fear) | Buy **1.5x** — increased accumulation |
+| Fear & Greed 41–60 (Neutral) | Buy **1.0x** — standard DCA |
+| Fear & Greed 61–80 (Greed) | Buy **0.5x** — reduced accumulation |
+| Fear & Greed 81–100 (Extreme Greed) | Buy **0.25x** — protect & build reserve |
 | RSI ≤ 35 | **Buildup mode** activated |
 
 **Reserve First Principle (Rule 4):** 30% of every budget is reserved. It only deploys during true market capitulation — when others are forced to sell.
@@ -40,13 +41,13 @@ Most retail investors lose money not because they pick the wrong assets — but 
 
 | Metric | Zion Smart DCA | Standard DCA | Buy & Hold |
 |--------|---------------|-------------|------------|
-| Total Return | **+195%** | +66% | +312% |
-| Sharpe Ratio | **1.84** | 1.12 | 1.67 |
-| Max Drawdown | **-23.4%** | -41.2% | -77.3% |
-| Win Rate | **67%** | 52% | N/A |
-| Profit Factor | **2.31** | 1.48 | N/A |
+| Total Return | **+56.4%** | +50.7% | +97.3% |
+| Sharpe Ratio | **1.768** | 1.699 | 1.67 |
+| Max Drawdown | **-44.6%** | -46.4% | -77.3% |
+| Win Rate | **59.0%** | 59.4% | N/A |
+| Profit Factor | **2.400** | 2.275 | N/A |
 
-> Zion Smart DCA achieves **~60% of Buy & Hold returns with less than 1/3 of the drawdown** — and dramatically outperforms Standard DCA in risk-adjusted terms.
+> Zion Smart DCA outperforms Standard DCA by +5.7pp return with better risk-adjusted metrics (Sharpe 1.768 vs 1.699) and slightly lower max drawdown.
 
 ### Live Period Simulation (Feb 13 – Jun 8, 2026 | Real Market Data)
 
@@ -138,12 +139,12 @@ zion-smart-dca-skill/
 
 1. **Weekly DCA Base** — fixed amount, every week, no excuses
 2. **RSI Buildup Trigger** — RSI ≤ 35 activates Buildup mode
-3. **F&G Multiplier Scale** — 0.5x to 2.0x based on market sentiment
+3. **F&G Multiplier Scale** — 0.25x to 2.0x based on market sentiment
 4. **Reserve First** — 70% DCA + 30% reserve, always
 5. **Auto-Reserve Replenishment** — greed surplus auto-routes to reserve
 6. **Income Scaling** — extra income ÷ 4 = weekly DCA increase
-7. **BTC Floor (40%)** — portfolio never goes below 40% BTC
-8. **Rebalance Trigger (60%)** — evaluate rebalancing above 60% BTC
+7. **BTC Floor (50%)** — portfolio never goes below 50% BTC
+8. **Rebalance Trigger (70%)** — evaluate rebalancing above 70% BTC
 9. **Scaling Out** — portfolio 4x invested → take 40% profit
 10. **No Emotion** — system decides, not feelings
 11. **Mandatory Logging** — every trade recorded with full context

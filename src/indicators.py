@@ -80,10 +80,10 @@ def get_fear_greed() -> tuple[int, str]:
 
 
 def _fg_label(value: int) -> str:
-    if value <= 24:   return "Extreme Fear"
-    elif value <= 44: return "Fear"
-    elif value <= 54: return "Neutral"
-    elif value <= 74: return "Greed"
+    if value <= 20:   return "Extreme Fear"
+    elif value <= 40: return "Fear"
+    elif value <= 60: return "Neutral"
+    elif value <= 80: return "Greed"
     else:             return "Extreme Greed"
 
 

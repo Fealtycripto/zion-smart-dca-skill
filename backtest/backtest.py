@@ -31,10 +31,12 @@ REPORT_PATH  = Path(__file__).parent / "report.md"
 # ─── Strategy implementations ────────────────────────────────────────────────
 
 def get_fg_multiplier(fg: int, cfg: dict) -> float:
-    if fg >= cfg["fg_extreme_greed"]: return 0.5
-    elif fg >= cfg["fg_greed"] + 1:   return 1.0
-    elif fg >= cfg["fg_extreme_fear"]: return 1.5
-    else:                              return 2.0
+    """Exact thresholds from Zion Smart DCA Whitepaper v2.0."""
+    if fg <= cfg["fg_extreme_fear"]:  return 2.0   # 0-20: Extreme Fear
+    elif fg <= cfg["fg_fear_top"]:    return 1.5   # 21-40: Fear
+    elif fg <= cfg["fg_neutral_top"]: return 1.0   # 41-60: Neutral
+    elif fg <= cfg["fg_greed_top"]:   return 0.5   # 61-80: Greed
+    else:                             return 0.25  # 81-100: Extreme Greed
 
 
 def run_zion_dca(df_weekly: pd.DataFrame, cfg: dict) -> pd.DataFrame:
@@ -335,9 +337,12 @@ def main():
         "dca_split":            0.70,
         "reserve_split":        0.30,
         "rsi_buildup_threshold": args.rsi,
-        "fg_extreme_fear":      25,
-        "fg_greed":             49,
-        "fg_extreme_greed":     75,
+        # Whitepaper v2.0 exact thresholds
+        "fg_extreme_fear":      20,    # F&G 0-20   -> 2.0x
+        "fg_fear_top":          40,    # F&G 21-40  -> 1.5x
+        "fg_neutral_top":       60,    # F&G 41-60  -> 1.0x
+        "fg_greed_top":         80,    # F&G 61-80  -> 0.5x
+        # F&G 81-100 -> 0.25x (Extreme Greed)
         "start_date":           args.start,
         "end_date":             datetime.today().strftime("%Y-%m-%d"),
     }
