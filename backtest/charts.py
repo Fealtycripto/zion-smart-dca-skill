@@ -52,8 +52,9 @@ plt.rcParams.update({
 
 CFG = {
     "weekly_budget": 100, "dca_split": 0.70, "reserve_split": 0.30,
-    "rsi_buildup_threshold": 35, "fg_extreme_fear": 25,
-    "fg_greed": 49, "fg_extreme_greed": 75,
+    "rsi_buildup_threshold": 35,
+    "fg_extreme_fear": 24, "fg_fear_top": 44,
+    "fg_neutral_top": 55, "fg_greed_top": 74,
     "start_date": "2021-01-01", "end_date": "2026-06-09",
 }
 
@@ -74,7 +75,7 @@ def chart_portfolio_value(df_zion, df_dca, df_weekly):
     fig.patch.set_facecolor(DARK_BG)
 
     dates = df_zion.index
-    ax.plot(dates, df_zion["portfolio_value"], color=GOLD,   lw=2.5, label="Zion Smart DCA v3.0",  zorder=3)
+    ax.plot(dates, df_zion["portfolio_value"], color=GOLD,   lw=2.5, label="Zion Smart DCA v4.0",  zorder=3)
     ax.plot(dates, df_dca["portfolio_value"],  color=BLUE,   lw=2.0, label="Standard DCA",         zorder=2, alpha=0.85)
     ax.plot(dates, df_zion["cash_spent"],      color=GRAY,   lw=1.2, label="Capital Invested",      zorder=1, linestyle="--", alpha=0.7)
 
@@ -338,7 +339,7 @@ def chart_metrics_dashboard(m_zion, m_dca, bh):
 
     # Header
     fig.text(0.5, 0.97,
-             "ZION SMART DCA v3.0 — 5-Year Backtest Results (2021–2026)",
+             "ZION SMART DCA v4.0 — 5-Year Backtest Results (2021–2026)",
              ha="center", va="top", fontsize=16, fontweight="bold", color=WHITE)
     fig.text(0.5, 0.94,
              "284 weeks | $100/week budget | BNB Hack 2026",

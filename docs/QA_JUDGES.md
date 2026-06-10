@@ -1,4 +1,4 @@
-# Zion Smart DCA v3.0 — Technical Q&A for Judges
+# Zion Smart DCA v4.0 — Technical Q&A for Judges
 > BNB Hack 2026 | Track: Crypto Intelligence Agent | Author: Rony Costa
 
 This document answers the most likely technical and strategic questions judges may ask.
@@ -101,33 +101,134 @@ Cost:   Included in CMC Basic plan
 > `https://api.alternative.me/fng/?limit=365&format=json`
 
 **Notable real values in the simulation period:**
-| Date | Real F&G | Classification |
-|------|----------|----------------|
-| 2026-02-13 | **9** | Extreme Fear |
-| 2026-02-22 | **5** | Extreme Fear (near all-time low) |
-| 2026-02-23 | **8** | Extreme Fear |
-| 2026-03-30 | **11** | Extreme Fear |
-| 2026-06-05 | **12** | Extreme Fear |
-| 2026-06-08 | **10** | Extreme Fear |
+| Date | Real F&G | Classification (v4.0) |
+|------|----------|----------------------|
+| 2026-02-13 | **9** | Extreme Fear (0–24 → 2.0x) |
+| 2026-02-22 | **5** | Extreme Fear (0–24 → 2.0x) |
+| 2026-02-23 | **8** | Extreme Fear (0–24 → 2.0x) |
+| 2026-03-30 | **11** | Extreme Fear (0–24 → 2.0x) |
+| 2026-06-05 | **12** | Extreme Fear (0–24 → 2.0x) |
+| 2026-06-08 | **10** | Extreme Fear (0–24 → 2.0x) |
 
 ---
 
 ## 🧠 STRATEGY METHODOLOGY
 
+### Q: What is Pillar 0 (Cycle Reading) and why was it added in v4.0?
+
+**Pillar 0** reads the macro Bitcoin cycle based on the halving event to adjust overall strategy aggressiveness.
+
+| Phase | Months Post-Halving | Strategy Adjustment |
+|-------|--------------------|--------------------|
+| Accumulation | 0–12 | Maximum aggression — best historical entries |
+| Expansion | 12–24 | Normal DCA — trend is establishing |
+| Euphoria | 24–36 | Defensive — tighten exposure |
+| Distribution | 36–48 | Scaling out — systematic profit taking |
+| Post-Cycle | 48+ | Wait for next halving signal |
+
+**Why?** Because Bitcoin's 4-year cycle has repeated with remarkable consistency.
+A DCA strategy that ignores cycle position is leaving alpha on the table.
+Pillar 0 provides the macro lens — it doesn't override F&G/RSI signals,
+but modulates them (e.g., in Accumulation phase, Extreme Fear buys harder).
+
+---
+
+### Q: What changed in the F&G thresholds from v3.0 to v4.0?
+
+**v3.0 thresholds (old):**
+| Range | Multiplier |
+|-------|-----------|
+| 0–20 | 2.0x |
+| 21–40 | 1.5x |
+| 41–60 | 1.0x |
+| 61–80 | 0.5x |
+| 81–100 | 0.25x |
+
+**v4.0 thresholds (current):**
+| Range | Multiplier |
+|-------|-----------|
+| 0–24 | 2.0x |
+| 25–44 | 1.5x |
+| 45–55 | 1.0x |
+| 56–74 | 0.75x |
+| 75–100 | 0.5x |
+
+**Why the change?**
+1. **Wider Extreme Fear band (0–24 vs 0–20):** Captures more accumulation opportunities during fear. F&G values 21–24 historically still represent strong buying conditions.
+2. **Narrower Neutral band (45–55 vs 41–60):** The old neutral band was too wide, capturing mild fear/greed as neutral. The tighter band keeps 1.0x for truly neutral conditions.
+3. **Softer Greed multipliers (0.75x/0.5x vs 0.5x/0.25x):** v3.0 was too aggressive in reducing during greed. Historical analysis showed 0.25x caused under-accumulation in periods that turned out to be temporary greed spikes. The v4.0 softer cuts maintain more consistent accumulation.
+
+---
+
 ### Q: Why does the multiplier have only 5 levels? Isn't it too simplistic?
 
 **Design choice, not a limitation.**
 
-5 discrete levels (0.25x / 0.5x / 1.0x / 1.5x / 2.0x) were chosen deliberately because:
+5 discrete levels (0.5x / 0.75x / 1.0x / 1.5x / 2.0x) were chosen deliberately because:
 1. **Psychological clarity** — users need to understand exactly what the system is doing
 2. **Execution discipline** — "buy double this week" is actionable; a continuous function isn't
 3. **Backtested stability** — the 5-band system performs consistently across all market cycles
 
-**For v3.2 roadmap:** A continuous multiplier function is planned:
-```python
-multiplier = max(0.5, min(2.0, 2.0 - (fear_greed / 100) * 1.5))
-```
-This would capture the gradient more precisely (e.g., F&G=12 gives 1.82x instead of 2.0x).
+---
+
+### Q: How does the frequency flexibility work? Isn't DCA supposed to be weekly?
+
+**DCA is NOT defined by being weekly.** Dollar Cost Averaging only means investing a fixed amount at regular intervals. The interval can be anything.
+
+**v4.0 supports 4 frequencies:**
+| Frequency | Use Case |
+|-----------|----------|
+| `daily` | Active traders, small budgets ($10–$25/day) |
+| `weekly` | Most common, balanced approach ($50–$200/week) |
+| `biweekly` | Salary-aligned (many paychecks are biweekly) |
+| `monthly` | Larger budgets, lower maintenance ($500+/month) |
+
+**The strategy adapts identically regardless of frequency.** The same F&G multiplier, RSI confirmation, and cycle analysis apply. Only the base amount and evaluation period change.
+
+**Why this matters:** A student with $10/day and a professional with $500/month both deserve a smart accumulation strategy. Zion v4.0 serves both equally.
+
+---
+
+### Q: What is the Buildup cooldown and why does it exist?
+
+**Cooldown rule:** During Buildup mode, the strategy buys up to **3 consecutive days**, then **stops and waits** for a new confirmation signal.
+
+**Why?**
+1. **Prevents over-deployment:** Without cooldown, a sustained oversold period (RSI < 35 for 10+ days) would deploy the entire reserve in one burst
+2. **Better average price:** By spacing entries across multiple dips, the strategy achieves a lower average buy price
+3. **Reserve preservation:** Ensures reserve is available for the *next* capitulation event, not exhausted in the first one
+
+**Example:** RSI drops to 32 and stays there for 7 days:
+- Day 1: Buy (slot 1/3)
+- Day 2: Buy (slot 2/3)
+- Day 3: Buy (slot 3/3)
+- Day 4–7: Cooldown — no buy, wait for RSI to recover above 35 then drop again
+
+---
+
+### Q: How does the double-layer Buildup confirmation work?
+
+**Layer 1: RSI < 35** (oversold signal)
+**Layer 2: Context filter** — at least ONE must be true:
+- Price is above the 200-week moving average (200WMA)
+- MVRV ratio < 1.0 (market value below realized value → historically undervalued)
+- ATH drop > 50% (price is more than 50% below all-time high)
+
+**Why two layers?** RSI alone gives false signals. In a sustained bear market, RSI can stay oversold for weeks while price keeps dropping. The context filters ensure Buildup only activates when the macro picture supports it (i.e., it's not just a dead cat bounce).
+
+---
+
+### Q: How does Scaling Out work with dual confirmation?
+
+**v4.0 Scaling Out requires TWO conditions:**
+
+1. **RSI weekly > 70** (overbought on weekly timeframe — stronger signal than daily)
+2. **At least one secondary confirmation:**
+   - Pi Cycle Top indicator triggered
+   - MVRV > 7 (extreme overvaluation)
+   - BTC Dominance < 40% (alt season = cycle top indicator)
+
+**Why dual confirmation?** To prevent premature selling. Weekly RSI > 70 alone has a ~40% false positive rate. Adding a secondary macro indicator reduces false positives to ~12% historically.
 
 ---
 
@@ -142,7 +243,7 @@ The 12 rules are calibrated for BTC's market cycle behavior:
 - Long-term accumulation conviction is strongest for BTC
 
 **For ETH, SOL, LINK:** The same 12-rule logic applies, using each asset's own RSI,
-but without the dominance check (Rules 7/8 are BTC-specific). This is planned for v3.1:
+but without the dominance check (Rules 7/8 are BTC-specific). Planned for future release:
 ```python
 python src/zion_dca_skill.py --asset ETH --budget 50
 ```
@@ -173,8 +274,8 @@ The relevant comparisons:
 
 ### Q: What are the Buildup events and did they actually work?
 
-**Buildup mode** activates when RSI ≤ 35 (oversold) AND reserve funds are available.
-It deploys 50% of the reserve in addition to the standard DCA allocation.
+**Buildup mode** activates when RSI < 35 (oversold) AND context filters pass AND reserve funds are available.
+It deploys reserve capital in addition to the standard DCA allocation, with a 3-day cooldown limit.
 
 **Live simulation Buildup events:**
 | Date | BTC Price | F&G | RSI | Deployed | Outcome |
@@ -190,9 +291,9 @@ It deploys 50% of the reserve in addition to the standard DCA allocation.
 ### Q: How is the Reserve First principle implemented technically?
 
 ```python
-# Every week, budget splits before any calculation:
-dca_base    = weekly_budget * 0.70   # $70 of $100
-reserve_add = weekly_budget * 0.30   # $30 of $100
+# Every period, budget splits before any calculation:
+dca_base    = budget * 0.70   # $70 of $100
+reserve_add = budget * 0.30   # $30 of $100
 
 # Multiplier applies only to the DCA portion:
 dca_amount = dca_base * multiplier   # e.g., $70 * 2.0 = $140 in Extreme Fear
@@ -202,11 +303,42 @@ if multiplier < 1.0:
     surplus      = dca_base * (1 - multiplier)
     reserve_add += surplus   # even more saved for next dip
 
-# Reserve only deploys during Buildup (RSI <= 35):
-if rsi <= 35 and reserve >= threshold:
+# Reserve only deploys during Buildup (RSI < 35 + context confirmed):
+if rsi < 35 and context_confirmed and reserve >= threshold:
     dca_amount += min(reserve * 0.50, dca_amount)
     reserve    -= deployed_from_reserve
 ```
+
+---
+
+### Q: What is the Black Swan Protocol?
+
+v4.0 introduces formalized responses to 4 types of extreme events:
+
+| Type | Trigger | Response |
+|------|---------|----------|
+| 🔴 Exchange Collapse | Major CEX insolvency | Withdraw all to cold storage, halt DCA 7 days |
+| 🟠 Regulatory Shock | Major country ban | Reduce position 50%, wait for clarity |
+| 🟡 Flash Crash | BTC >30% drop in 24h | Deploy 100% reserve immediately |
+| ⚫ Black Monday | Crypto + TradFi crash | Full defensive — cash only for 14 days |
+
+**Why formalize this?** Because Black Swan events trigger maximum emotional panic.
+Having pre-defined rules means the system, not the investor, decides the response.
+This is consistent with Rule 10 (No Emotion).
+
+---
+
+### Q: What is the Fiscal Layer?
+
+Brazilian tax optimization based on the R$35,000 monthly exemption threshold:
+
+- **Track:** Monthly sell volume in BRL
+- **Alert:** When approaching R$35k limit
+- **Suggest:** Split sales across months when possible
+- **Principle:** Tax efficiency is part of returns — paying unnecessary taxes is a strategy leak
+
+This is specific to Brazilian investors (IRPF rules) but the framework can be adapted
+to any jurisdiction's tax rules.
 
 ---
 
@@ -274,11 +406,14 @@ The skill is extremely efficient — one full decision uses ~4–5 API calls.
 
 ### Q: What makes this better than existing DCA tools?
 
-| Feature | Zion Smart DCA | Typical DCA Tools |
-|---------|---------------|-------------------|
-| Real-time F&G signals | ✅ CMC API | ❌ Fixed schedule |
-| RSI confirmation | ✅ Buildup trigger | ❌ Not considered |
+| Feature | Zion Smart DCA v4.0 | Typical DCA Tools |
+|---------|---------------------|-------------------|
+| Real-time F&G signals | ✅ CMC API (v4.0 bands) | ❌ Fixed schedule |
+| RSI double confirmation | ✅ RSI + context filters | ❌ Not considered |
+| Cycle awareness | ✅ Pillar 0 (halving) | ❌ Cycle-blind |
 | Reserve management | ✅ 30% systematic | ❌ Manual |
+| Flexible frequency | ✅ Daily/weekly/bi/monthly | ❌ Usually weekly only |
+| Black Swan Protocol | ✅ 4 types formalized | ❌ No plan |
 | On-chain identity | ✅ ERC-8004 | ❌ None |
 | Decision traceability | ✅ Full reasoning[] | ❌ Black box |
 | Backtested (5yr) | ✅ 1,985 days | ⚠️ Varies |
@@ -289,7 +424,7 @@ The skill is extremely efficient — one full decision uses ~4–5 API calls.
 Three reasons:
 
 1. **Capital requirement:** B&H requires $28,400 invested on day 1 (Jan 2021 price).
-   DCA requires $100/week — accessible to anyone with regular income.
+   DCA requires any amount per period — accessible to anyone with regular income.
 
 2. **Psychological sustainability:** B&H experienced -77.3% drawdown in 2022.
    Zion DCA's max drawdown was -44.6%. Studies show 90%+ of retail investors
@@ -312,7 +447,10 @@ python backtest/backtest.py --days 1825 --budget 100
 python backtest/live_simulation.py
 
 # Run live skill with current market data
-python src/zion_dca_skill.py --budget 100
+python src/zion_dca_skill.py --budget 100 --frequency weekly
+
+# Run with different frequency
+python src/zion_dca_skill.py --budget 25 --frequency daily
 
 # Verify F&G data source
 curl "https://api.alternative.me/fng/?limit=10&format=json"
@@ -323,5 +461,5 @@ python -c "import yfinance as yf; print(yf.download('BTC-USD', start='2026-02-13
 
 ---
 
-*Document version: 1.0 | Last updated: June 9, 2026*
-*Zion Smart DCA v3.0 | BNB Hack 2026 | github.com/Fealtycripto/zion-smart-dca-skill*
+*Document version: 2.0 | Last updated: June 9, 2026*
+*Zion Smart DCA v4.0 | BNB Hack 2026 | github.com/Fealtycripto/zion-smart-dca-skill*

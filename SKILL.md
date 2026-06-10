@@ -1,8 +1,11 @@
 # Zion Smart DCA — BTC Accumulation Strategy Skill
 
-An intelligent DCA strategy that dynamically adjusts weekly BTC purchase amounts
-based on CMC Fear & Greed Index and RSI signals, with a built-in reserve that
-auto-deploys during market capitulation events.
+An intelligent DCA strategy that dynamically adjusts BTC purchase amounts
+based on CMC Fear & Greed Index, RSI signals, and halving cycle analysis,
+with a built-in reserve that auto-deploys during market capitulation events.
+
+**v4.0 features:** Cycle reading (Pillar 0), double-layer Buildup confirmation,
+flexible frequency (daily/weekly/biweekly/monthly), Black Swan Protocol, and fiscal awareness.
 
 **Proven over 5 years of backtesting: +56.4% vs standard DCA | Sharpe 1.768 | Max DD -44.6%**
 **57 real transactions since February 2026 — this strategy is live, not theoretical.**
@@ -25,8 +28,14 @@ auto-deploys during market capitulation events.
 ## Usage
 
 ```bash
-# Live decision (uses CMC API real-time data)
+# Live decision — default $100 weekly
 python src/zion_dca_skill.py --budget 100
+
+# Flexible frequency — adapts to your reality
+python src/zion_dca_skill.py --budget 10 --frequency daily
+python src/zion_dca_skill.py --budget 100 --frequency weekly
+python src/zion_dca_skill.py --budget 200 --frequency biweekly
+python src/zion_dca_skill.py --budget 500 --frequency monthly
 
 # Run full 5-year backtest
 python backtest/backtest.py --symbol BTC --days 1825 --budget 100
@@ -35,19 +44,21 @@ python backtest/backtest.py --symbol BTC --days 1825 --budget 100
 python backtest/backtest.py \
   --budget 100 \
   --rsi-threshold 35 \
-  --fg-extreme-fear 20 \
-  --fg-extreme-greed 80
+  --fg-extreme-fear 24 \
+  --fg-extreme-greed 75
 ```
 
 ## Parameters
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--budget` | 100 | Weekly DCA budget in USD |
+| `--budget` | 100 | DCA base amount in USD ($10, $50, $100, $500 — whatever fits) |
+| `--frequency` | weekly | DCA frequency: `daily`, `weekly`, `biweekly`, `monthly` |
 | `--rsi-threshold` | 35 | RSI level to trigger Buildup mode |
-| `--fg-extreme-fear` | 20 | F&G below this = 2.0x multiplier |
-| `--fg-extreme-greed` | 80 | F&G above this = 0.25x multiplier |
+| `--fg-extreme-fear` | 24 | F&G at or below this = 2.0x multiplier |
+| `--fg-extreme-greed` | 75 | F&G at or above this = 0.5x multiplier |
 | `--dca-split` | 0.70 | % of budget for DCA (rest goes to reserve) |
+| `--avg-price` | 0.0 | Average buy price USD (Rule 5: never sell below PM) |
 
 ## Output / Performance Metrics (5-Year Backtest 2021–2026)
 
@@ -69,7 +80,7 @@ python backtest/backtest.py \
 ```json
 {
   "skill": "Zion Smart DCA",
-  "version": "3.0",
+  "version": "4.0",
   "decision": {
     "action": "BUY",
     "type": "BUILDUP_2X",
@@ -81,39 +92,64 @@ python backtest/backtest.py \
   "market": {
     "btc_price_usd": 60500.00,
     "fear_greed_index": 11,
-    "rsi_14d": 33.5
+    "rsi_14d": 33.5,
+    "rsi_weekly": 42.0
+  },
+  "pillars": {
+    "pillar_0_cycle": {
+      "phase": "Accumulation",
+      "months_since_halving": 8,
+      "adjustment": "aggressive"
+    },
+    "pillar_2_buildup": {
+      "active": true,
+      "context": "200WMA confirmed",
+      "max_slots": 5,
+      "consecutive_days": 1
+    }
   },
   "reasoning": [
-    "Extreme Fear (F&G=11 <= 20) → 2.0x — maximum accumulation",
-    "RSI 33.5 <= 35.0 → Buildup ELIGIBLE (oversold)",
+    "Cycle Phase: Accumulation (8mo post-halving) → aggressive",
+    "Extreme Fear (F&G=11 <= 24) → 2.0x — maximum accumulation",
+    "RSI 33.5 < 35.0 → Buildup ELIGIBLE (oversold + context confirmed)",
     "Reserve First: 70% DCA + 30% reserve"
   ],
-  "rules_applied": ["Rule 1", "Rule 2", "Rule 3", "Rule 4", "Rule 7", "Rule 8"]
+  "rules_applied": ["Rule 1", "Rule 2", "Rule 3", "Rule 4", "Rule 5", "Rule 8"]
 }
 ```
+
+## F&G Multiplier Table (v4.0)
+
+| F&G Index | Classification | Multiplier | Buy (base $100) |
+|-----------|---------------|------------|-----------------|
+| 0–24 | 😱 Extreme Fear | **2.0x** | $140 |
+| 25–44 | 😰 Fear | **1.5x** | $105 |
+| 45–55 | 😐 Neutral | **1.0x** | $70 |
+| 56–74 | 😊 Greed | **0.75x** | $52.50 |
+| 75–100 | 🤑 Extreme Greed | **0.5x** | $35 |
 
 ## Risks & Caveats
 
 - Past performance does not guarantee future results
-- Strategy assumes sufficient capital reserve for Buildup events (min 2x weekly budget)
+- Strategy assumes sufficient capital reserve for Buildup events (min 2x base budget)
 - RSI and F&G are lagging indicators — some signals may arrive 1-3 days late
 - Reserve deployment requires manual execution (not automated in Track 2 submission)
 - BTC-focused strategy — altcoin allocation rules apply separately
 - Backtest uses weekly granularity; intra-week volatility not captured
 
-## Strategy Rules Summary
+## Strategy Rules Summary (v4.0)
 
 | # | Rule | Trigger |
 |---|------|---------|
-| 1 | Weekly DCA Base | Every week |
-| 2 | RSI Buildup | RSI ≤ 35 |
-| 3 | F&G Multiplier | 0.25x–2.0x |
+| 1 | DCA Base | Every period (daily/weekly/biweekly/monthly) |
+| 2 | RSI Buildup | RSI < 35 + context filters |
+| 3 | F&G Multiplier | 0.5x–2.0x (v4.0 bands) |
 | 4 | Reserve First | Always (70/30 split) |
-| 5 | Auto-Reserve | Greed surplus |
+| 5 | Never Sell Below PM | Avg buy price floor (non-negotiable) |
 | 6 | Income Scaling | Income change |
 | 7 | BTC Floor | < 50% portfolio |
-| 8 | Rebalance | > 70% portfolio |
-| 9 | Scaling Out | 4x portfolio value |
+| 8 | Zero Leverage | No margin, no futures |
+| 9 | Limit Orders | Buildup buys only |
 | 10 | No Emotion | System-driven |
 | 11 | Mandatory Log | Every trade |
 | 12 | Monthly Review | First week/month |
@@ -125,7 +161,7 @@ enabling discovery, reputation tracking, and future integration with the BNB Cha
 
 ```python
 from bnbagent import AgentIdentity
-agent = AgentIdentity(name="Zion Smart DCA", version="3.0")
+agent = AgentIdentity(name="Zion Smart DCA", version="4.0")
 agent.register()  # ERC-8004 on BNB testnet
 ```
 

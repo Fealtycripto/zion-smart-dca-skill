@@ -4,7 +4,7 @@ Zion Smart DCA — Live Period Simulation
 $100/week in BTC using real market data (Feb 13 - Jun 8, 2026)
 Real prices + F&G proxy from actual market conditions.
 
-This simulates: "What if someone followed Zion Smart DCA v3.0 exactly
+This simulates: "What if someone followed Zion Smart DCA v4.0 exactly
 since Feb 13, 2026 with $100/week in Bitcoin?"
 """
 
@@ -53,19 +53,19 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def get_multiplier(fg: float) -> float:
-    """Exact thresholds from Zion Smart DCA Whitepaper v2.0."""
-    if fg <= 20:   return 2.0   # Extreme Fear  (0-20)
-    elif fg <= 40: return 1.5   # Fear          (21-40)
-    elif fg <= 60: return 1.0   # Neutral       (41-60)
-    elif fg <= 80: return 0.5   # Greed         (61-80)
-    else:          return 0.25  # Extreme Greed (81-100)
+    """Exact thresholds from Zion Smart DCA v4.0."""
+    if fg <= 24:   return 2.0   # Extreme Fear  (0-24)
+    elif fg <= 44: return 1.5   # Fear          (25-44)
+    elif fg <= 55: return 1.0   # Neutral       (45-55)
+    elif fg <= 74: return 0.75  # Greed         (56-74)
+    else:          return 0.5   # Extreme Greed (75-100)
 
 
 def get_fg_label(fg: float) -> str:
-    if fg <= 20:   return "EXTREME FEAR"
-    elif fg <= 40: return "Fear"
-    elif fg <= 60: return "Neutral"
-    elif fg <= 80: return "Greed"
+    if fg <= 24:   return "EXTREME FEAR"
+    elif fg <= 44: return "Fear"
+    elif fg <= 55: return "Neutral"
+    elif fg <= 74: return "Greed"
     else:          return "EXTREME GREED"
 
 
@@ -152,7 +152,7 @@ def print_results(df_zion: pd.DataFrame, df_dca: pd.DataFrame):
     buildups = df_zion[df_zion["is_buildup"] == True]
 
     print("\n" + "=" * 65)
-    print("  ZION SMART DCA v3.0 — LIVE PERIOD SIMULATION")
+    print("  ZION SMART DCA v4.0 — LIVE PERIOD SIMULATION")
     print(f"  {START_DATE} to {END_DATE} | $100/week | BTC only")
     print("=" * 65)
     print(f"  {'Metric':<28} {'Zion DCA':>14} {'Std DCA':>14}")
@@ -197,7 +197,7 @@ def generate_chart(df_zion: pd.DataFrame, df_dca: pd.DataFrame):
                     color=GREEN, s=120, zorder=5,
                     label=f"BUILDUP! (F&G={buildups.iloc[0]['fear_greed']})", marker="^")
 
-    ax1.set_title(f"Zion Smart DCA v3.0 — Live Period Simulation\n"
+    ax1.set_title(f"Zion Smart DCA v4.0 — Live Period Simulation\n"
                   f"{START_DATE} to {END_DATE} | $100/week | Bitcoin only",
                   fontsize=14, fontweight="bold", pad=15)
     ax1.set_ylabel("Value (USD)")

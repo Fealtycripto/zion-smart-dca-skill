@@ -32,12 +32,15 @@ load_dotenv()
 
 AGENT_CARD = {
     "name":        "Zion Smart DCA",
-    "version":     "3.0",
+    "version":     "4.0",
     "description": (
-        "An intelligent Bitcoin accumulation agent using CoinMarketCap "
-        "Fear & Greed Index and RSI signals to dynamically scale weekly "
-        "DCA purchases. Implements 12 formalized rules including the "
-        "Reserve First principle for capital-efficient accumulation."
+        "An intelligent Bitcoin accumulation agent (v4.0) using CoinMarketCap "
+        "Fear & Greed Index, RSI signals, and halving cycle analysis to "
+        "dynamically scale DCA purchases. Features 5 pillars: Cycle Reading, "
+        "F&G Multiplier (0–24/25–44/45–55/56–74/75–100), double-layer Buildup "
+        "confirmation, Scaling Out with dual confirmation, and Reserve First. "
+        "Supports flexible frequency (daily/weekly/biweekly/monthly) and any "
+        "budget amount. Includes Black Swan Protocol and fiscal efficiency layer."
     ),
     "author":      "Rony Costa (@Fealtycripto)",
     "repository":  "https://github.com/Fealtycripto/zion-smart-dca-skill",
@@ -51,15 +54,25 @@ AGENT_CARD = {
         "reserve_management",
         "portfolio_rebalancing",
         "backtest_execution",
+        "cycle_analysis",
+        "black_swan_protocol",
+        "fiscal_efficiency",
+        "flexible_frequency",
     ],
     "data_sources": [
         "CoinMarketCap Agent Hub (Fear & Greed, RSI, Price)",
         "Yahoo Finance (historical BTC OHLCV)",
     ],
     "input_schema": {
-        "weekly_budget_usd": {"type": "float", "required": True,  "default": 100.0},
-        "btc_portfolio_pct": {"type": "float", "required": False, "default": 0.54},
-        "reserve_usd":       {"type": "float", "required": False, "default": 0.0},
+        "budget_usd":       {"type": "float",  "required": True,  "default": 100.0,
+                             "description": "DCA base amount in USD. Any amount works: $10, $50, $100, $500."},
+        "frequency":        {"type": "string", "required": False, "default": "weekly",
+                             "enum": ["daily", "weekly", "biweekly", "monthly"],
+                             "description": "DCA frequency — adapts to the investor's reality."},
+        "btc_portfolio_pct": {"type": "float",  "required": False, "default": 0.54},
+        "reserve_usd":       {"type": "float",  "required": False, "default": 0.0},
+        "avg_buy_price_usd": {"type": "float",  "required": False, "default": 0.0,
+                              "description": "Average buy price for Rule 5 (never sell below PM)."},
     },
     "output_schema": {
         "action":                     {"type": "string",  "enum": ["BUY", "SKIP", "SELL"]},
@@ -70,6 +83,8 @@ AGENT_CARD = {
         "reserve_contribution_usd":   {"type": "float"},
         "reasoning":                  {"type": "array"},
         "rules_applied":              {"type": "array"},
+        "cycle_phase":                {"type": "string"},
+        "buildup_active":             {"type": "boolean"},
     },
     "performance": {
         "backtest_period":   "2021-01-01 to 2026-06-09",
@@ -235,13 +250,13 @@ def run_with_agent_context():
 
     print_agent_card()
     print("Running live skill decision...\n")
-    run_skill(budget=100.0, btc_pct=0.54, reserve=0.0, json_only=False)
+    run_skill(budget=100.0, frequency="weekly", btc_pct=0.54, reserve=0.0)
 
 
 # ─── Main ────────────────────────────────────────────────────────────────────
 
 def main():
-    p = argparse.ArgumentParser(description="Zion Smart DCA - BNB Agent SDK")
+    p = argparse.ArgumentParser(description="Zion Smart DCA v4.0 - BNB Agent SDK")
     g = p.add_mutually_exclusive_group()
     g.add_argument("--register", action="store_true", help="Register agent on BNB testnet (ERC-8004)")
     g.add_argument("--info",     action="store_true", help="Show agent identity card")

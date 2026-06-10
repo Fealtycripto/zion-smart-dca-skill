@@ -2,7 +2,7 @@
 """
 Zion Smart DCA — Backtest Engine
 5-year BTC backtest (2021-2026) comparing:
-  1. Zion Smart DCA v3.0
+  1. Zion Smart DCA v4.0
   2. Standard DCA (fixed weekly amount)
   3. Buy & Hold
 
@@ -31,16 +31,16 @@ REPORT_PATH  = Path(__file__).parent / "report.md"
 # ─── Strategy implementations ────────────────────────────────────────────────
 
 def get_fg_multiplier(fg: int, cfg: dict) -> float:
-    """Exact thresholds from Zion Smart DCA Whitepaper v2.0."""
-    if fg <= cfg["fg_extreme_fear"]:  return 2.0   # 0-20: Extreme Fear
-    elif fg <= cfg["fg_fear_top"]:    return 1.5   # 21-40: Fear
-    elif fg <= cfg["fg_neutral_top"]: return 1.0   # 41-60: Neutral
-    elif fg <= cfg["fg_greed_top"]:   return 0.5   # 61-80: Greed
-    else:                             return 0.25  # 81-100: Extreme Greed
+    """Exact thresholds from Zion Smart DCA v4.0 (ZION-SMART-DCA-REGRAS.md)."""
+    if fg <= cfg["fg_extreme_fear"]:  return 2.0    # 0-24: Extreme Fear
+    elif fg <= cfg["fg_fear_top"]:    return 1.5    # 25-44: Fear
+    elif fg <= cfg["fg_neutral_top"]: return 1.0    # 45-55: Neutral
+    elif fg <= cfg["fg_greed_top"]:   return 0.75   # 56-74: Greed
+    else:                             return 0.5    # 75-100: Extreme Greed
 
 
 def run_zion_dca(df_weekly: pd.DataFrame, cfg: dict) -> pd.DataFrame:
-    """Simulates Zion Smart DCA v3.0 week by week."""
+    """Simulates Zion Smart DCA v4.0 week by week."""
     budget     = cfg["weekly_budget"]
     dca_split  = cfg["dca_split"]
     res_split  = cfg["reserve_split"]
@@ -212,7 +212,7 @@ def calc_metrics(df: pd.DataFrame, label: str) -> dict:
 def print_comparison(zion: dict, dca: dict, bh: dict):
     sep = "=" * 70
     print(f"\n{sep}")
-    print("  ZION SMART DCA v3.0 - 5-YEAR BACKTEST RESULTS (2021-2026)")
+    print("  ZION SMART DCA v4.0 - 5-YEAR BACKTEST RESULTS (2021-2026)")
     print(f"{sep}")
     print(f"  {'Metric':<28} {'Zion DCA':>12} {'Std DCA':>12} {'Buy&Hold':>12}")
     print(f"  {'-'*28} {'-'*12} {'-'*12} {'-'*12}")
@@ -337,12 +337,12 @@ def main():
         "dca_split":            0.70,
         "reserve_split":        0.30,
         "rsi_buildup_threshold": args.rsi,
-        # Whitepaper v2.0 exact thresholds
-        "fg_extreme_fear":      20,    # F&G 0-20   -> 2.0x
-        "fg_fear_top":          40,    # F&G 21-40  -> 1.5x
-        "fg_neutral_top":       60,    # F&G 41-60  -> 1.0x
-        "fg_greed_top":         80,    # F&G 61-80  -> 0.5x
-        # F&G 81-100 -> 0.25x (Extreme Greed)
+        # Zion Smart DCA v4.0 official thresholds
+        "fg_extreme_fear":      24,    # F&G 0-24   -> 2.0x
+        "fg_fear_top":          44,    # F&G 25-44  -> 1.5x
+        "fg_neutral_top":       55,    # F&G 45-55  -> 1.0x
+        "fg_greed_top":         74,    # F&G 56-74  -> 0.75x
+        # F&G 75-100 -> 0.5x (Extreme Greed)
         "start_date":           args.start,
         "end_date":             datetime.today().strftime("%Y-%m-%d"),
     }
@@ -366,7 +366,7 @@ def main():
     bh      = run_buy_and_hold(df_weekly, cfg)
 
     # ── Compute metrics ──────────────────────────────────────────────────────
-    m_zion = calc_metrics(df_zion, "Zion Smart DCA v3.0")
+    m_zion = calc_metrics(df_zion, "Zion Smart DCA v4.0")
     m_dca  = calc_metrics(df_dca,  "Standard DCA")
 
     # ── Print & save ─────────────────────────────────────────────────────────
