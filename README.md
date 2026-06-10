@@ -234,7 +234,7 @@ This agent is registered on **BNB Smart Chain Testnet** via the ERC-8004 standar
 | Field | Value |
 |-------|-------|
 | **Wallet** | `0x4E9feDB6DFb93fe7Ae98E2d2Bfe4fb6398A568bd` |
-| **TX Hash** | [`0x5b36774865ad295891d898ccca74b88ded502a593fa5624d0671e1cf37afd558`](https://testnet.bscscan.com/tx/0x5b36774865ad295891d898ccca74b88ded502a593fa5624d0671e1cf37afd558) |
+| **TX Hash** | [`0x4dcc42a27db87bc573c855edb0b0735a22548ce554042a8fbbd2519b8466b1c3`](https://testnet.bscscan.com/tx/0x4dcc42a27db87bc573c855edb0b0735a22548ce554042a8fbbd2519b8466b1c3) |
 | **Network** | BSC Testnet (chain_id: 97) |
 | **Standard** | ERC-8004 (Trustless Agent Identity) |
 

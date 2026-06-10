@@ -221,11 +221,11 @@ def register_on_chain():
         reg_data = {
             "registered_at":  datetime.now().isoformat(),
             "wallet_address": wallet.address,
-            "agent_id":       agent_id,
-            "tx_hash":        tx_hash,
+            "agent_id":       str(agent_id),
+            "tx_hash":        str(tx_hash),
             "network":        "BSC Testnet (chain_id: 97)",
             "explorer":       f"https://testnet.bscscan.com/tx/{tx_hash}",
-            "full_result":    result,
+            "full_result":    str(result),
         }
         reg_path.write_text(json.dumps(reg_data, indent=2))
         print(f"\nRegistration saved to {reg_path}")
