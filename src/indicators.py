@@ -88,31 +88,59 @@ def _btc_price_fallback() -> float:
 
 # ── 2. Fear & Greed Index ────────────────────────────────────────────────────
 def get_fear_greed() -> tuple:
-    """CMC Tool: get_global_metrics_latest — Returns F&G value (0-100) and label."""
-    url = f"{CMC_BASE_URL}/v1/global-metrics/quotes/latest"
+    """
+    Fetches Fear & Greed Index. 
+    
+    PRIORITY ORDER (v4.0):
+      1. Alternative.me — free, dedicated F&G endpoint, always returns real value
+      2. CMC global-metrics — fallback only (Basic plan returns no F&G data,
+         silently defaults to 50 which is WRONG)
+    """
+    # Primary: Alternative.me (dedicated F&G API, always accurate)
     try:
-        r = requests.get(url, headers=HEADERS, timeout=10)
-        r.raise_for_status()
-        data = r.json()
-        fg_value = int(data["data"].get("fear_greed_value", 50))
-        fg_label = _fg_label_v4(fg_value)
-        return fg_value, fg_label
-    except Exception as e:
-        print(f"[WARN] get_fear_greed CMC failed: {e} — trying Alternative.me")
+        fg_val, fg_label = _fg_alternative_me()
+        if fg_val != 50:  # 50 could be a genuine value, but also a default
+            return fg_val, fg_label
+        # If exactly 50, double-check with CMC before accepting
+    except Exception:
+        pass
+
+    # Secondary: CMC global-metrics
+    try:
+        fg_val, fg_label = _fg_from_cmc()
+        if fg_val != 50:  # CMC Basic plan returns no F&G -> defaults to 50
+            return fg_val, fg_label
+    except Exception:
+        pass
+
+    # If Alternative.me returned 50, it's probably real — use it
+    try:
         return _fg_alternative_me()
+    except Exception:
+        print("[WARN] All F&G sources failed — returning 50/Neutral as last resort")
+        return 50, "Neutral"
+
+
+def _fg_from_cmc() -> tuple:
+    """CMC Tool: get_global_metrics_latest — Returns F&G value if available."""
+    url = f"{CMC_BASE_URL}/v1/global-metrics/quotes/latest"
+    r = requests.get(url, headers=HEADERS, timeout=10)
+    r.raise_for_status()
+    data = r.json()
+    fg_value = data["data"].get("fear_greed_value")
+    if fg_value is None:
+        raise ValueError("CMC global-metrics does not include fear_greed_value (Basic plan)")
+    fg_value = int(fg_value)
+    return fg_value, _fg_label_v4(fg_value)
 
 
 def _fg_alternative_me() -> tuple:
-    """Fallback: Fear & Greed from Alternative.me (free, no API key)."""
-    try:
-        r = requests.get("https://api.alternative.me/fng/?limit=1&format=json", timeout=10)
-        r.raise_for_status()
-        data = r.json()
-        value = int(data["data"][0]["value"])
-        return value, _fg_label_v4(value)
-    except Exception as e:
-        print(f"[WARN] Alternative.me F&G also failed: {e} — returning 50/Neutral")
-        return 50, "Neutral"
+    """Primary F&G source: Alternative.me (free, dedicated endpoint, always accurate)."""
+    r = requests.get("https://api.alternative.me/fng/?limit=1&format=json", timeout=10)
+    r.raise_for_status()
+    data = r.json()
+    value = int(data["data"][0]["value"])
+    return value, _fg_label_v4(value)
 
 
 def _fg_label_v4(value: int) -> str:
