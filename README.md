@@ -169,7 +169,9 @@ zion-smart-dca-skill/
 │   ├── strategy.py          ← 12-rule strategy engine (v4.0)
 │   ├── indicators.py        ← CMC Agent Hub integration
 │   ├── zion_dca_skill.py    ← Main skill entry point
-│   └── agent.py             ← BNB AI Agent SDK (ERC-8004)
+│   ├── agent.py             ← BNB AI Agent SDK (ERC-8004)
+│   ├── commerce.py          ← ERC-8183 Agentic Commerce jobs
+│   └── server.py            ← FastAPI job server (ERC-8183 endpoints)
 ├── backtest/
 │   ├── backtest.py          ← Backtesting engine
 │   ├── data_loader.py       ← Historical BTC data (2021-2026)
@@ -244,6 +246,78 @@ python src/agent.py --register
 
 # View agent identity card
 python src/agent.py --info
+
+# Start ERC-8183 job server
+python src/agent.py --serve
+```
+
+## ERC-8183 Agentic Commerce
+
+Zion Smart DCA exposes its analysis capabilities as **paid jobs** via the [ERC-8183](https://eips.ethereum.org/EIPS/eip-8183) Agentic Commerce standard. Other AI agents can discover, purchase, and consume DCA analysis through a standard REST API.
+
+### Available Jobs
+
+| Job Type | Description | Price |
+|----------|-------------|-------|
+| `analyze_market` | Real-time market analysis + DCA recommendation | $0.50 / 0.001 BNB |
+| `backtest_period` | Historical backtest with performance comparison | $2.00 / 0.004 BNB |
+| `portfolio_check` | Scaling Out analysis + milestone check | $0.25 / 0.0005 BNB |
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | Server health check |
+| `GET` | `/agent-card` | ERC-8004 agent identity card |
+| `GET` | `/jobs` | List available job types (ERC-8183 catalog) |
+| `POST` | `/jobs/analyze` | Execute market analysis job |
+| `POST` | `/jobs/backtest` | Execute backtest job |
+| `POST` | `/jobs/portfolio` | Execute portfolio check job |
+| `GET` | `/jobs/{job_id}` | Query job status |
+
+### Quick Start — Job Server
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the ERC-8183 job server
+python src/agent.py --serve
+# OR directly:
+uvicorn src.server:app --host 0.0.0.0 --port 8000 --reload
+
+# Open interactive docs
+# http://localhost:8000/docs
+```
+
+### Example — Agent-to-Agent Request
+
+```python
+import requests
+
+# 1. Discover available jobs
+jobs = requests.get("http://localhost:8000/jobs").json()
+
+# 2. Request market analysis
+result = requests.post("http://localhost:8000/jobs/analyze", json={
+    "budget_usd": 100,
+    "frequency": "weekly",
+    "btc_pct": 0.54,
+}).json()
+
+print(result["result"]["decision"]["decision"]["action"])  # "BUY"
+print(result["result"]["decision"]["decision"]["multiplier"])  # 2.0
+```
+
+### ERC-8183 Flow
+
+```
+┌──────────────────┐    ┌─────────────────────┐    ┌──────────────────┐
+│  Requesting Agent │──>│  ERC-8183 Escrow     │──>│  Zion Smart DCA  │
+│  (any AI agent)   │   │  (on-chain payment)  │   │  (job provider)  │
+│                   │<──│                      │<──│                  │
+│  Receives result  │   │  Releases payment    │   │  Returns analysis│
+└──────────────────┘    └─────────────────────┘    └──────────────────┘
 ```
 
 ## Author

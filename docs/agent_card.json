@@ -17,10 +17,13 @@
     "cycle_analysis",
     "black_swan_protocol",
     "fiscal_efficiency",
-    "flexible_frequency"
+    "flexible_frequency",
+    "mcp_integration",
+    "trending_analysis"
   ],
   "data_sources": [
-    "CoinMarketCap Agent Hub (Fear & Greed, RSI, Price)",
+    "CoinMarketCap Agent Hub (MCP + REST)",
+    "CoinMarketCap Agent Hub (Fear & Greed, RSI, Price, Trending)",
     "Alternative.me (Fear & Greed historical)",
     "Yahoo Finance (historical BTC OHLCV, RSI, 200WMA, ATH)"
   ],

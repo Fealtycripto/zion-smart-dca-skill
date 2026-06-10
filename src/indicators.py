@@ -295,6 +295,48 @@ def estimate_cycle_phase() -> tuple:
     return phase, months
 
 
+# ── 9. Trending BTC — Social Momentum Signal ─────────────────────────────────
+def get_trending_btc() -> tuple:
+    """
+    CMC Tool: get_trending_cryptocurrencies — Checks if BTC is trending.
+
+    Calls /v1/cryptocurrency/trending/latest and checks whether BTC (id=1)
+    appears in the top 10 trending coins. This acts as a social momentum
+    signal for the strategy engine.
+
+    Returns:
+        tuple: (is_trending: bool, rank: int or None)
+            - (True, 3) means BTC is #3 in trending
+            - (False, None) means BTC is not trending or API failed
+
+    Note:
+        The trending endpoint may not be available on CMC Basic plan.
+        In that case, this function fails silently and returns (False, None).
+    """
+    url = f"{CMC_BASE_URL}/v1/cryptocurrency/trending/latest"
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=10)
+        r.raise_for_status()
+        data = r.json()
+
+        # CMC trending response: data[] contains trending coins
+        trending_list = data.get("data", [])
+
+        # Check top 10 for BTC (CMC id=1, symbol=BTC)
+        for i, coin in enumerate(trending_list[:10]):
+            coin_id = coin.get("id", 0)
+            coin_symbol = coin.get("symbol", "").upper()
+            if coin_id == 1 or coin_symbol == "BTC":
+                rank = i + 1
+                return (True, rank)
+
+        return (False, None)
+
+    except Exception:
+        # Silently fail — Basic plan may not have trending endpoint access
+        return (False, None)
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # MAIN: Fetch All Signals
 # ═══════════════════════════════════════════════════════════════════════════════

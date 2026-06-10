@@ -58,9 +58,14 @@ AGENT_CARD = {
         "black_swan_protocol",
         "fiscal_efficiency",
         "flexible_frequency",
+        "erc8183_commerce",
+        "job_server",
+        "mcp_integration",
+        "trending_analysis",
     ],
     "data_sources": [
-        "CoinMarketCap Agent Hub (Fear & Greed, RSI, Price)",
+        "CoinMarketCap Agent Hub (MCP + REST)",
+        "CoinMarketCap Agent Hub (Fear & Greed, RSI, Price, Trending)",
         "Yahoo Finance (historical BTC OHLCV)",
     ],
     "input_schema": {
@@ -103,6 +108,19 @@ AGENT_CARD = {
     "networks": {
         "primary":  "BNB Smart Chain Testnet (chain_id: 97)",
         "mainnet":  "BNB Smart Chain (chain_id: 56)",
+    },
+    "service_endpoint": {
+        "url":          "http://localhost:8000",
+        "protocol":     "ERC-8183",
+        "docs":         "http://localhost:8000/docs",
+        "agent_card":   "http://localhost:8000/agent-card",
+        "job_catalog":  "http://localhost:8000/jobs",
+        "endpoints": {
+            "analyze_market":  "POST /jobs/analyze",
+            "backtest_period": "POST /jobs/backtest",
+            "portfolio_check": "POST /jobs/portfolio",
+            "job_status":      "GET  /jobs/{job_id}",
+        },
     },
 }
 
@@ -261,6 +279,7 @@ def main():
     g.add_argument("--register", action="store_true", help="Register agent on BNB testnet (ERC-8004)")
     g.add_argument("--info",     action="store_true", help="Show agent identity card")
     g.add_argument("--run",      action="store_true", help="Run skill with agent context")
+    g.add_argument("--serve",    action="store_true", help="Start ERC-8183 job server (FastAPI)")
     args = p.parse_args()
 
     if args.register:
@@ -270,6 +289,16 @@ def main():
         save_agent_card()
     elif args.run:
         run_with_agent_context()
+    elif args.serve:
+        print("\nStarting ERC-8183 Job Server...")
+        print("Docs:       http://localhost:8000/docs")
+        print("Agent Card: http://localhost:8000/agent-card")
+        print("Job Catalog: http://localhost:8000/jobs\n")
+        try:
+            import uvicorn
+            uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True)
+        except ImportError:
+            print("[ERROR] Install FastAPI first: pip install 'fastapi[standard]'")
     else:
         # Default: show card + save
         print_agent_card()
