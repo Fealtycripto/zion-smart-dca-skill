@@ -29,22 +29,22 @@
         }
 
         :root {
-            --primary: #00ff88;
-            --primary-dim: rgba(0, 255, 136, 0.15);
-            --primary-glow: rgba(0, 255, 136, 0.4);
-            --secondary: #00d4ff;
-            --secondary-dim: rgba(0, 212, 255, 0.15);
-            --accent: #f5a623;
-            --accent-dim: rgba(245, 166, 35, 0.15);
+            --primary: #00ff41;
+            --primary-dim: rgba(0, 255, 65, 0.12);
+            --primary-glow: rgba(0, 255, 65, 0.35);
+            --secondary: #00cc33;
+            --secondary-dim: rgba(0, 204, 51, 0.12);
+            --accent: #39ff14;
+            --accent-dim: rgba(57, 255, 20, 0.12);
             --bg-dark: #000000;
-            --bg-deep: #050a0f;
-            --bg-card: rgba(0, 255, 136, 0.03);
-            --bg-card-hover: rgba(0, 255, 136, 0.06);
-            --glass-border: rgba(0, 255, 136, 0.08);
-            --glass-border-hover: rgba(0, 255, 136, 0.2);
-            --text-primary: #e0fff0;
-            --text-secondary: rgba(224, 255, 240, 0.6);
-            --text-dim: rgba(224, 255, 240, 0.35);
+            --bg-deep: #020a02;
+            --bg-card: rgba(0, 15, 2, 0.88);
+            --bg-card-hover: rgba(0, 20, 3, 0.92);
+            --glass-border: rgba(0, 255, 65, 0.12);
+            --glass-border-hover: rgba(0, 255, 65, 0.3);
+            --text-primary: #f0fff0;
+            --text-secondary: rgba(220, 255, 220, 0.75);
+            --text-dim: rgba(200, 255, 200, 0.45);
             --danger: #ff4444;
             --warning: #ff8800;
             --font-primary: 'Inter', -apple-system, sans-serif;
@@ -67,11 +67,13 @@
             color: var(--text-primary);
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            line-height: 1.6;
+            line-height: 1.7;
+            font-size: 15px;
+            letter-spacing: 0.01em;
         }
 
-        /* ========== THREE.JS CANVAS ========== */
-        #three-canvas {
+        /* ========== MATRIX RAIN CANVAS ========== */
+        #matrix-canvas {
             position: fixed;
             top: 0;
             left: 0;
@@ -79,6 +81,7 @@
             height: 100%;
             z-index: -1;
             pointer-events: none;
+            opacity: 0.12;
         }
 
         /* ========== GLOBAL UTILITIES ========== */
@@ -118,31 +121,29 @@
             font-family: var(--font-display);
             font-size: clamp(28px, 4vw, 42px);
             font-weight: 700;
-            line-height: 1.15;
+            line-height: 1.2;
             margin-bottom: 16px;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 50%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #f0fff0;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
         }
 
         .section-desc {
             font-size: 16px;
-            color: var(--text-secondary);
+            color: rgba(220, 255, 220, 0.8);
             max-width: 640px;
             margin-bottom: 48px;
-            line-height: 1.7;
+            line-height: 1.8;
         }
 
-        /* ========== GLASS CARD ========== */
+        /* ========== GLASS CARD (Matrix style — high readability) ========== */
         .glass-card {
-            background: var(--bg-card);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
+            background: rgba(0, 12, 2, 0.92);
+            border: 1px solid rgba(0, 255, 65, 0.1);
+            border-radius: 12px;
             padding: 28px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
@@ -154,16 +155,16 @@
             left: 0;
             right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
+            background: linear-gradient(90deg, transparent, rgba(0,255,65,0.25), transparent);
             opacity: 0;
             transition: opacity 0.4s;
         }
 
         .glass-card:hover {
-            border-color: var(--glass-border-hover);
-            background: var(--bg-card-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 40px rgba(0, 255, 136, 0.06), 0 0 80px rgba(0, 255, 136, 0.02);
+            border-color: rgba(0, 255, 65, 0.25);
+            background: rgba(0, 15, 3, 0.95);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 30px rgba(0, 255, 65, 0.05);
         }
 
         .glass-card:hover::before {
@@ -1353,8 +1354,8 @@
     <!-- ==================== SCANLINE OVERLAY ==================== -->
     <div class="scanline-overlay"></div>
 
-    <!-- ==================== THREE.JS CANVAS ==================== -->
-    <canvas id="three-canvas"></canvas>
+    <!-- ==================== MATRIX RAIN CANVAS ==================== -->
+    <canvas id="matrix-canvas"></canvas>
 
     <!-- ==================== HEADER ==================== -->
     <header class="header" id="header">
@@ -1987,8 +1988,6 @@
     </footer>
 
     <!-- ==================== SCRIPTS ==================== -->
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
@@ -2079,171 +2078,66 @@
         }, 400);
     }
 
-    // ===== THREE.JS PARTICLE BACKGROUND =====
-    function initThreeJS() {
-        const canvas = document.getElementById('three-canvas');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // ===== MATRIX RAIN BACKGROUND =====
+    function initMatrixRain() {
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
 
-        // Particle system
-        const particleCount = 2500;
-        const geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(particleCount * 3);
-        const colors = new Float32Array(particleCount * 3);
-        const sizes = new Float32Array(particleCount);
-        const velocities = new Float32Array(particleCount * 3);
-
-        const colorPrimary = new THREE.Color(0x00ff88);
-        const colorSecondary = new THREE.Color(0x00d4ff);
-        const colorAccent = new THREE.Color(0xf5a623);
-
-        for (let i = 0; i < particleCount; i++) {
-            const i3 = i * 3;
-            positions[i3]     = (Math.random() - 0.5) * 40;
-            positions[i3 + 1] = (Math.random() - 0.5) * 40;
-            positions[i3 + 2] = (Math.random() - 0.5) * 40;
-
-            velocities[i3]     = (Math.random() - 0.5) * 0.002;
-            velocities[i3 + 1] = (Math.random() - 0.5) * 0.002;
-            velocities[i3 + 2] = (Math.random() - 0.5) * 0.002;
-
-            // Color distribution: 60% green, 30% cyan, 10% gold
-            const rand = Math.random();
-            let color;
-            if (rand < 0.6) color = colorPrimary;
-            else if (rand < 0.9) color = colorSecondary;
-            else color = colorAccent;
-
-            colors[i3]     = color.r;
-            colors[i3 + 1] = color.g;
-            colors[i3 + 2] = color.b;
-
-            sizes[i] = Math.random() * 2 + 0.5;
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
+        resize();
+        window.addEventListener('resize', resize);
 
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        // Matrix characters (katakana + latin + numbers + symbols)
+        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ₿Ξ◆◇○●□■△▽♦♠♣♥$%&@#';
+        const charArray = chars.split('');
+        
+        const fontSize = 14;
+        const columns = Math.floor(canvas.width / fontSize);
+        
+        // Each column has its own drop position
+        const drops = new Array(columns).fill(1);
+        // Random speeds per column
+        const speeds = new Array(columns).fill(0).map(() => 0.5 + Math.random() * 1.5);
+        // Random brightness per column
+        const brightness = new Array(columns).fill(0).map(() => 0.3 + Math.random() * 0.7);
 
-        // Shader material for glowing particles
-        const material = new THREE.ShaderMaterial({
-            uniforms: {
-                uTime: { value: 0 },
-                uMouse: { value: new THREE.Vector2(0, 0) },
-                uPixelRatio: { value: renderer.getPixelRatio() }
-            },
-            vertexShader: `
-                attribute float size;
-                attribute vec3 color;
-                varying vec3 vColor;
-                varying float vAlpha;
-                uniform float uTime;
-                uniform vec2 uMouse;
-                uniform float uPixelRatio;
+        function draw() {
+            // Semi-transparent black to create fade trail
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.06)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                void main() {
-                    vColor = color;
-                    vec3 pos = position;
+            ctx.font = fontSize + 'px monospace';
 
-                    // Subtle wave motion
-                    pos.x += sin(uTime * 0.3 + position.y * 0.5) * 0.15;
-                    pos.y += cos(uTime * 0.2 + position.x * 0.3) * 0.15;
-                    pos.z += sin(uTime * 0.15 + position.z * 0.2) * 0.1;
-
-                    // Mouse interaction — subtle attraction
-                    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-                    vec2 screenPos = mvPosition.xy / mvPosition.w;
-                    float dist = length(screenPos - uMouse * 2.0);
-                    float influence = smoothstep(1.5, 0.0, dist) * 0.4;
-                    pos.xy += normalize(uMouse * 2.0 - screenPos) * influence;
-
-                    mvPosition = modelViewMatrix * vec4(pos, 1.0);
-                    gl_Position = projectionMatrix * mvPosition;
-
-                    float sizeAtten = size * uPixelRatio * (200.0 / -mvPosition.z);
-                    gl_PointSize = max(sizeAtten, 1.0);
-
-                    // Distance-based alpha
-                    vAlpha = smoothstep(40.0, 5.0, length(pos)) * 0.8;
+            for (let i = 0; i < drops.length; i++) {
+                // Random character
+                const char = charArray[Math.floor(Math.random() * charArray.length)];
+                
+                // Leading character is brighter (white-green)
+                const b = brightness[i];
+                const isHead = Math.random() > 0.97;
+                
+                if (isHead) {
+                    ctx.fillStyle = `rgba(200, 255, 200, ${b})`;
+                } else {
+                    ctx.fillStyle = `rgba(0, 255, 65, ${b * 0.6})`;
                 }
-            `,
-            fragmentShader: `
-                varying vec3 vColor;
-                varying float vAlpha;
 
-                void main() {
-                    float dist = length(gl_PointCoord - vec2(0.5));
-                    if (dist > 0.5) discard;
+                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
 
-                    float glow = 1.0 - smoothstep(0.0, 0.5, dist);
-                    glow = pow(glow, 1.5);
-
-                    gl_FragColor = vec4(vColor, glow * vAlpha);
+                // Reset drop randomly after it passes screen
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.98) {
+                    drops[i] = 0;
+                    brightness[i] = 0.3 + Math.random() * 0.7;
                 }
-            `,
-            transparent: true,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending
-        });
 
-        const particles = new THREE.Points(geometry, material);
-        scene.add(particles);
-
-        camera.position.z = 15;
-
-        // Mouse tracking
-        let targetMouseX = 0, targetMouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            targetMouseX = (e.clientX / window.innerWidth) * 2 - 1;
-            targetMouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-        });
-
-        // Resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            material.uniforms.uPixelRatio.value = renderer.getPixelRatio();
-        });
-
-        // Animation loop
-        const clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-            const elapsed = clock.getElapsedTime();
-
-            material.uniforms.uTime.value = elapsed;
-
-            // Smooth mouse follow
-            const currentMouse = material.uniforms.uMouse.value;
-            currentMouse.x += (targetMouseX - currentMouse.x) * 0.05;
-            currentMouse.y += (targetMouseY - currentMouse.y) * 0.05;
-
-            // Slow rotation
-            particles.rotation.y = elapsed * 0.03;
-            particles.rotation.x = Math.sin(elapsed * 0.02) * 0.1;
-
-            // Animate individual particles
-            const pos = geometry.attributes.position.array;
-            for (let i = 0; i < particleCount; i++) {
-                const i3 = i * 3;
-                pos[i3]     += velocities[i3];
-                pos[i3 + 1] += velocities[i3 + 1];
-                pos[i3 + 2] += velocities[i3 + 2];
-
-                // Wrap around
-                if (Math.abs(pos[i3]) > 20) velocities[i3] *= -1;
-                if (Math.abs(pos[i3 + 1]) > 20) velocities[i3 + 1] *= -1;
-                if (Math.abs(pos[i3 + 2]) > 20) velocities[i3 + 2] *= -1;
+                drops[i] += speeds[i];
             }
-            geometry.attributes.position.needsUpdate = true;
-
-            renderer.render(scene, camera);
         }
-        animate();
+
+        setInterval(draw, 45);
     }
 
     // ===== API INTEGRATION =====
@@ -2816,7 +2710,7 @@
 
         // Three.js
         try {
-            initThreeJS();
+            initMatrixRain();
         } catch (e) {
             console.warn('Three.js init failed:', e);
         }
