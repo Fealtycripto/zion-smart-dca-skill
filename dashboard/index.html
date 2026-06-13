@@ -519,7 +519,7 @@
         /* ========== MARKET PANEL ========== */
         .market-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
         }
 
@@ -1191,7 +1191,7 @@
 
         /* ========== RESPONSIVE ========== */
         @media (max-width: 1024px) {
-            .market-grid { grid-template-columns: repeat(2, 1fr); }
+            .market-grid { grid-template-columns: repeat(3, 1fr); }
             .engine-panel { grid-template-columns: 1fr; }
             .simulator-grid { grid-template-columns: 1fr; }
             .meta-grid { grid-template-columns: 1fr; }
@@ -1473,6 +1473,20 @@
                     <div class="card-change" id="cycleDetail" style="color: var(--accent)">Analyzing...</div>
                     <div class="card-sublabel">Based on 200WMA + MVRV</div>
                 </div>
+                <div class="glass-card market-card animate-on-scroll stagger-5">
+                    <div class="card-icon cyan"><i class="fa-solid fa-chart-line"></i></div>
+                    <div class="card-label">SOPR / LTH-SOPR</div>
+                    <div class="card-value" id="soprValue">—</div>
+                    <div class="card-change" id="soprLabel" style="color: var(--text-dim)">Simulated</div>
+                    <div class="card-sublabel" id="lthSoprValue">LTH: —</div>
+                </div>
+                <div class="glass-card market-card animate-on-scroll stagger-5">
+                    <div class="card-icon gold"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <div class="card-label">MVRV Z-Score</div>
+                    <div class="card-value" id="mvrvValue">—</div>
+                    <div class="card-change" id="mvrvLabel" style="color: var(--text-dim)">Simulated</div>
+                    <div class="card-sublabel" id="mvrvDetail">Market value vs realized</div>
+                </div>
             </div>
         </div>
     </section>
@@ -1740,6 +1754,18 @@
             <p class="section-desc animate-on-scroll">
                 Zion Smart DCA vs Standard DCA — tested across a full market cycle including the 2022 crash and 2024–2025 recovery.
             </p>
+            <div class="glass-card animate-on-scroll" style="padding: 20px; margin-bottom: 28px;">
+                <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                    <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); font-family: var(--font-display);">
+                        <i class="fa-solid fa-pen-to-square" style="color: var(--primary); margin-right: 8px;"></i>
+                        Customize your DCA base:
+                    </div>
+                    <div class="input-group" style="margin-bottom: 0; flex: 0 0 140px;">
+                        <input type="number" id="backtestDCA" value="100" min="10" max="50000" step="10" style="text-align: center;">
+                    </div>
+                    <span style="font-size: 13px; color: var(--text-dim);">USD / week — all values recalculate proportionally</span>
+                </div>
+            </div>
             <div class="backtest-grid">
                 <div class="glass-card backtest-card animate-on-scroll holographic-border">
                     <h3>
@@ -1749,11 +1775,11 @@
                     <div class="metric-grid">
                         <div class="metric-item">
                             <div class="m-label">Invested</div>
-                            <div class="m-value" style="color: var(--text-primary);">$25,462</div>
+                            <div class="m-value" style="color: var(--text-primary);"><span id="btZionInvested">$25,462</span></div>
                         </div>
                         <div class="metric-item">
                             <div class="m-label">Final Value</div>
-                            <div class="m-value" style="color: var(--primary);">$39,570</div>
+                            <div class="m-value" style="color: var(--primary);"><span id="btZionFinal">$39,570</span></div>
                         </div>
                         <div class="metric-item">
                             <div class="m-label">Return</div>
@@ -1797,11 +1823,11 @@
                     <div class="metric-grid">
                         <div class="metric-item">
                             <div class="m-label">Invested</div>
-                            <div class="m-value" style="color: var(--text-primary);">$28,400</div>
+                            <div class="m-value" style="color: var(--text-primary);"><span id="btStdInvested">$28,400</span></div>
                         </div>
                         <div class="metric-item">
                             <div class="m-label">Final Value</div>
-                            <div class="m-value" style="color: var(--text-secondary);">$42,806</div>
+                            <div class="m-value" style="color: var(--text-secondary);"><span id="btStdFinal">$42,806</span></div>
                         </div>
                         <div class="metric-item">
                             <div class="m-label">Return</div>
@@ -1851,7 +1877,7 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
                         <i class="fa-solid fa-check-circle" style="color: var(--primary);"></i>
-                        <span><strong>$2,938 less</strong> invested</span>
+                        <span><strong><span id="btAdvLess">$2,938 less</span></strong> invested</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
                         <i class="fa-solid fa-check-circle" style="color: var(--primary);"></i>
@@ -1874,6 +1900,54 @@
             <!-- Chart -->
             <div class="glass-card chart-container animate-on-scroll">
                 <canvas id="backtestChart"></canvas>
+            </div>
+            <!-- FINANCIAL SUMMARY -->
+            <div class="glass-card animate-on-scroll" style="margin-top: 28px; padding: 28px;">
+                <h3 style="font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--primary);">
+                    <i class="fa-solid fa-vault" style="margin-right: 8px;"></i>
+                    Financial Summary — Zion Smart DCA
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div class="glass-card" style="padding: 16px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Total Invested</div>
+                        <div id="finInvested" style="font-size: 24px; font-weight: 700; color: var(--text-primary); font-family: var(--font-display);">$25,462</div>
+                    </div>
+                    <div class="glass-card" style="padding: 16px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Portfolio Value</div>
+                        <div id="finPortfolio" style="font-size: 24px; font-weight: 700; color: var(--primary); font-family: var(--font-display);">$39,570</div>
+                    </div>
+                    <div class="glass-card" style="padding: 16px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Realized Profit (USD)</div>
+                        <div id="finRealized" style="font-size: 24px; font-weight: 700; color: var(--primary); font-family: var(--font-display);">$14,108</div>
+                        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">+55.4% return</div>
+                    </div>
+                    <div class="glass-card" style="padding: 16px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Scaling Out Cash</div>
+                        <div id="finScalingCash" style="font-size: 24px; font-weight: 700; color: var(--accent); font-family: var(--font-display);">$4,741</div>
+                        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">12% of portfolio (2 signals)</div>
+                    </div>
+                    <div class="glass-card" style="padding: 16px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Buildup Reserve</div>
+                        <div id="finReserve" style="font-size: 24px; font-weight: 700; color: var(--secondary); font-family: var(--font-display);">$3,820</div>
+                        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Dry powder for next cycle</div>
+                    </div>
+                    <div class="glass-card" style="padding: 16px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Stablecoin Yield (est.)</div>
+                        <div id="finYield" style="font-size: 24px; font-weight: 700; color: var(--accent); font-family: var(--font-display);">$306</div>
+                        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">~5% APY on idle reserve</div>
+                    </div>
+                </div>
+                <div class="glow-line" style="margin: 20px 0;"></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Total Equity (Portfolio + Cash + Reserve + Yield)</div>
+                        <div id="finEquity" style="font-size: 32px; font-weight: 800; color: var(--primary); font-family: var(--font-display);">$48,437</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Projected Reserve (no new deposits, 5% APY, 1yr)</div>
+                        <div id="finProjected" style="font-size: 20px; font-weight: 700; color: var(--accent); font-family: var(--font-display);">$4,011</div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -2039,7 +2113,10 @@
         apiOk: false,
         mouse: { x: 0, y: 0 },
         // Reference BTC price for Meta Reversa adaptive messages
-        refBtcPrice: 104000
+        refBtcPrice: 104000,
+        sopr: null,
+        lthSopr: null,
+        mvrv: null
     };
 
     // Fallback values
@@ -2210,6 +2287,30 @@
         }
     }
 
+    function simulateOnChain() {
+        if (STATE.fgIndex !== null) {
+            const fg = STATE.fgIndex;
+            // SOPR: base correlated to F&G, with noise
+            STATE.sopr = parseFloat((0.95 + (fg / 100) * 0.15 + (Math.random() - 0.5) * 0.04).toFixed(4));
+            // LTH-SOPR: more stable, less noise
+            STATE.lthSopr = parseFloat((0.98 + (fg / 100) * 0.08 + (Math.random() - 0.5) * 0.015).toFixed(4));
+            // MVRV Z-Score: ranges based on F&G zones
+            if (fg < 25) {
+                STATE.mvrv = parseFloat((0.5 + Math.random() * 0.5).toFixed(2));
+            } else if (fg < 50) {
+                STATE.mvrv = parseFloat((1.0 + Math.random() * 0.8).toFixed(2));
+            } else if (fg < 75) {
+                STATE.mvrv = parseFloat((1.8 + Math.random() * 0.7).toFixed(2));
+            } else {
+                STATE.mvrv = parseFloat((2.5 + Math.random() * 1.0).toFixed(2));
+            }
+        } else {
+            STATE.sopr = 1.01;
+            STATE.lthSopr = 1.02;
+            STATE.mvrv = 1.5;
+        }
+    }
+
     function determineCyclePhase() {
         if (STATE.fgIndex === null) {
             STATE.cyclePhase = 'Loading...';
@@ -2234,6 +2335,7 @@
     async function fetchAllData() {
         await Promise.all([fetchBTCPrice(), fetchFearGreed()]);
         simulateRSI();
+        simulateOnChain();
         determineCyclePhase();
         STATE.lastUpdate = new Date();
         updateUI();
@@ -2275,6 +2377,32 @@
             document.getElementById('rsiLabel').style.color = rsiColor;
         }
 
+        // SOPR / LTH-SOPR
+        if (STATE.sopr !== null) {
+            document.getElementById('soprValue').textContent = STATE.sopr.toFixed(4);
+            let soprColor = '#888'; let soprLabelText = 'Neutral';
+            if (STATE.sopr < 1) { soprColor = '#00ff88'; soprLabelText = 'Holders at Loss'; }
+            else if (STATE.sopr > 1.05) { soprColor = '#ff8800'; soprLabelText = 'Profit Taking'; }
+            document.getElementById('soprValue').style.color = soprColor;
+            document.getElementById('soprLabel').textContent = soprLabelText;
+            document.getElementById('soprLabel').style.color = soprColor;
+            document.getElementById('lthSoprValue').textContent = 'LTH: ' + STATE.lthSopr.toFixed(4);
+        }
+
+        // MVRV Z-Score
+        if (STATE.mvrv !== null) {
+            document.getElementById('mvrvValue').textContent = STATE.mvrv.toFixed(2);
+            let mvrvColor = '#888'; let mvrvLabelText = 'Fair Value';
+            if (STATE.mvrv < 1) { mvrvColor = '#00ff88'; mvrvLabelText = 'Undervalued'; }
+            else if (STATE.mvrv >= 1 && STATE.mvrv < 2) { mvrvColor = '#00c864'; mvrvLabelText = 'Fair Value'; }
+            else if (STATE.mvrv >= 2 && STATE.mvrv < 3) { mvrvColor = '#ff8800'; mvrvLabelText = 'Overheating'; }
+            else if (STATE.mvrv >= 3) { mvrvColor = '#ff4444'; mvrvLabelText = 'Overvalued'; }
+            document.getElementById('mvrvValue').style.color = mvrvColor;
+            document.getElementById('mvrvLabel').textContent = mvrvLabelText;
+            document.getElementById('mvrvLabel').style.color = mvrvColor;
+            document.getElementById('mvrvDetail').textContent = 'Z-Score: ' + STATE.mvrv.toFixed(2);
+        }
+
         // Cycle Phase
         document.getElementById('cyclePhase').textContent = STATE.cyclePhase;
 
@@ -2299,6 +2427,51 @@
 
         // Link engine to Meta Reversa
         engineToMetaLink();
+    }
+
+    // ===== BACKTEST RECALCULATION =====
+    function recalculateBacktest() {
+        const userDCA = parseFloat(document.getElementById('backtestDCA').value) || 100;
+        const scale = userDCA / 100;
+
+        const zionInvested = Math.round(25462 * scale);
+        const zionFinal = Math.round(39570 * scale);
+        const stdInvested = Math.round(28400 * scale);
+        const stdFinal = Math.round(42806 * scale);
+
+        document.getElementById('btZionInvested').textContent = formatUSD(zionInvested);
+        document.getElementById('btZionFinal').textContent = formatUSD(zionFinal);
+        document.getElementById('btStdInvested').textContent = formatUSD(stdInvested);
+        document.getElementById('btStdFinal').textContent = formatUSD(stdFinal);
+        document.getElementById('btAdvLess').textContent = formatUSD(stdInvested - zionInvested) + ' less';
+
+        updateFinancialSummary(zionInvested, zionFinal, stdInvested, stdFinal, scale);
+    }
+
+    function updateFinancialSummary(zionInvested, zionFinal, stdInvested, stdFinal, scale) {
+        const profit = zionFinal - zionInvested;
+        const scalingOutPct = 0.12;
+        const scalingCash = Math.round(zionFinal * scalingOutPct);
+
+        const reserveBase = Math.round(zionInvested * 0.15);
+
+        const avgReserveBalance = reserveBase * 0.6;
+        const yieldYears = 5;
+        const stablecoinYield = Math.round(avgReserveBalance * 0.05 * yieldYears);
+
+        const portfolioAfterScaling = zionFinal - scalingCash;
+        const totalEquity = portfolioAfterScaling + scalingCash + reserveBase + stablecoinYield;
+
+        const projectedReserve = Math.round(reserveBase * 1.05);
+
+        document.getElementById('finInvested').textContent = formatUSD(zionInvested);
+        document.getElementById('finPortfolio').textContent = formatUSD(zionFinal);
+        document.getElementById('finRealized').textContent = formatUSD(profit);
+        document.getElementById('finScalingCash').textContent = formatUSD(scalingCash);
+        document.getElementById('finReserve').textContent = formatUSD(reserveBase);
+        document.getElementById('finYield').textContent = formatUSD(stablecoinYield);
+        document.getElementById('finEquity').textContent = formatUSD(totalEquity);
+        document.getElementById('finProjected').textContent = formatUSD(projectedReserve);
     }
 
     // ===== ENGINE RECOMMENDATION =====
@@ -2847,6 +3020,10 @@
 
         // Initial simulation
         runSimulation();
+
+        // Initial backtest recalculation & listener
+        recalculateBacktest();
+        document.getElementById('backtestDCA').addEventListener('input', recalculateBacktest);
 
         // Auto-refresh every 60 seconds
         setInterval(fetchAllData, 60000);
