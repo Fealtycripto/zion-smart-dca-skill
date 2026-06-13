@@ -1494,8 +1494,8 @@
                     <div id="recHeadline" style="font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">
                         Processing market data...
                     </div>
-                    <div class="rec-amount" id="recAmount" style="color: var(--primary);">$—</div>
-                    <div style="font-size: 13px; color: var(--text-dim);">Adjusted DCA amount for this week</div>
+                    <div class="rec-amount" id="recAmount" style="color: var(--primary);">—x</div>
+                    <div style="font-size: 13px; color: var(--text-dim);">Active multiplier on your DCA base</div>
                     <div class="rec-reasoning" id="recReasoning">
                         Waiting for market data to generate recommendation...
                     </div>
@@ -2306,8 +2306,6 @@
         if (!STATE.fgIndex || !STATE.btcPrice) return;
 
         const zone = getFgZone(STATE.fgIndex);
-        const baseDCA = 100; // Example base
-        const adjusted = baseDCA * zone.multiplier;
 
         const statusEl = document.getElementById('recStatus');
         const actionEl = document.getElementById('recAction');
@@ -2321,33 +2319,33 @@
             action = 'STRONG BUY';
             cssClass = 'buy';
             headline = 'Maximum Accumulation Mode';
-            reasoning = `Fear & Greed at ${STATE.fgIndex} (${zone.label}) — the market is fearful. Multiplier at ${zone.multiplier}x increases your DCA from $${baseDCA} to $${adjusted.toFixed(0)}. The extra $${(adjusted - baseDCA).toFixed(0)} is drawn FROM your Buildup Reserve. RSI at ${STATE.rsi} ${STATE.rsi < 35 ? 'confirms oversold conditions — Buildup protocol may also trigger.' : 'supports continued accumulation.'}`;
+            reasoning = `The market is in ${zone.label} territory (F&G: ${STATE.fgIndex}). The engine is signaling maximum accumulation — your DCA multiplier is at ${zone.multiplier}x. This means if your weekly DCA is $100, you would deploy $${(100 * zone.multiplier).toFixed(0)} this week. If it's $50, you'd deploy $${(50 * zone.multiplier).toFixed(0)}. The extra capital comes FROM your Buildup Reserve. RSI at ${STATE.rsi} ${STATE.rsi < 35 ? 'confirms oversold conditions — the Buildup protocol may also trigger additional limit orders.' : 'supports continued aggressive accumulation.'}`;
         } else if (zone.multiplier > 1.0) {
             action = 'BUY';
             cssClass = 'buy';
             headline = 'Elevated Accumulation';
-            reasoning = `Fear & Greed at ${STATE.fgIndex} (${zone.label}) — sentiment is fearful. The ${zone.multiplier}x multiplier increases your weekly DCA. Extra capital comes from the Buildup Reserve.`;
+            reasoning = `Sentiment is in ${zone.label} zone (F&G: ${STATE.fgIndex}). The engine activates a ${zone.multiplier}x multiplier on your DCA base. For example, a $100/week DCA becomes $${(100 * zone.multiplier).toFixed(0)}/week. The additional capital is drawn from your Buildup Reserve, which was accumulated during periods of market greed.`;
         } else if (zone.multiplier === 1.0) {
             action = 'STEADY DCA';
             cssClass = 'hold';
             headline = 'Standard Accumulation';
-            reasoning = `Fear & Greed at ${STATE.fgIndex} (${zone.label}) — market sentiment is balanced. No adjustment needed. Your DCA runs at the base rate. No reserve movement.`;
+            reasoning = `Market sentiment is neutral (F&G: ${STATE.fgIndex}). Your DCA runs at its standard base rate — no multiplier adjustment, no reserve movement. If your DCA is $100/week, it stays at $100/week. This is the baseline rhythm of the strategy.`;
         } else if (zone.multiplier >= 0.75) {
             action = 'REDUCE';
             cssClass = 'hold';
             headline = 'Capital Conservation Mode';
-            reasoning = `Fear & Greed at ${STATE.fgIndex} (${zone.label}) — getting greedy. The ${zone.multiplier}x multiplier reduces your DCA from $${baseDCA} to $${adjusted.toFixed(0)}. The surplus $${(baseDCA - adjusted).toFixed(0)} goes TO your Buildup Reserve for future opportunities.`;
+            reasoning = `The market is getting greedy (F&G: ${STATE.fgIndex}, ${zone.label}). The engine reduces your DCA to ${zone.multiplier}x of your base. For example, a $100/week DCA drops to $${(100 * zone.multiplier).toFixed(0)}/week. The surplus $${(100 - 100 * zone.multiplier).toFixed(0)} is saved TO your Buildup Reserve — building dry powder for the next fear cycle.`;
         } else {
             action = 'MINIMAL DCA';
             cssClass = 'sell';
             headline = 'Maximum Conservation';
-            reasoning = `Fear & Greed at ${STATE.fgIndex} (${zone.label}) — extreme greed. Only ${zone.multiplier}x of your base DCA is deployed. The saved $${(baseDCA - adjusted).toFixed(0)} builds your reserve. If RSI weekly > 70, Scaling Out protocol may trigger sell signals.`;
+            reasoning = `Extreme greed detected (F&G: ${STATE.fgIndex}). The engine cuts your DCA to just ${zone.multiplier}x of your base — a $100 DCA becomes only $${(100 * zone.multiplier).toFixed(0)}. Half of your budget is preserved in the Buildup Reserve. When fear returns, this reserve will fuel 1.5x–2.0x multiplied accumulation. ${STATE.rsi > 70 ? 'RSI weekly is elevated — Scaling Out protocol may trigger partial sell signals.' : ''}`;
         }
 
         statusEl.className = 'rec-status ' + cssClass;
         actionEl.textContent = action;
         headlineEl.textContent = headline;
-        amountEl.textContent = formatUSD2(adjusted);
+        amountEl.textContent = zone.multiplier + 'x';
         amountEl.style.color = cssClass === 'buy' ? 'var(--primary)' : cssClass === 'sell' ? 'var(--danger)' : 'var(--secondary)';
         reasoningEl.textContent = reasoning;
 
