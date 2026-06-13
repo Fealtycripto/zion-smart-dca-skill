@@ -1690,6 +1690,35 @@
                         <div id="metaFeasibility" class="meta-feasibility feasible" style="display: none;"></div>
                         <div id="metaAdaptiveMsg" class="meta-adaptive-msg" style="display: none;"></div>
                     </div>
+                    <!-- ENGINE <> META REVERSA LINK -->
+                    <div id="engineLink" style="display: none; margin-top: 16px; padding: 16px; background: rgba(0,255,65,0.04); border: 1px solid rgba(0,255,65,0.15); border-radius: 2px;">
+                        <div style="font-size: 11px; font-weight: 600; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; font-family: var(--font-display); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-link"></i> Engine Link — Live
+                        </div>
+                        <div class="sim-result-row">
+                            <span class="sim-result-label">Engine Status</span>
+                            <span class="sim-result-value" id="linkEngineStatus" style="font-weight: 700;">—</span>
+                        </div>
+                        <div class="sim-result-row">
+                            <span class="sim-result-label">Current Multiplier</span>
+                            <span class="sim-result-value" id="linkMultiplier">—</span>
+                        </div>
+                        <div class="sim-result-row">
+                            <span class="sim-result-label">This Week's DCA</span>
+                            <span class="sim-result-value" id="linkWeeklyDCA">—</span>
+                        </div>
+                        <div class="sim-result-row">
+                            <span class="sim-result-label">Accumulation Speed</span>
+                            <span class="sim-result-value" id="linkAccumSpeed">—</span>
+                        </div>
+                        <div class="glow-line" style="margin: 12px 0;"></div>
+                        <div class="sim-result-row">
+                            <span class="sim-result-label">ETA Adjustment</span>
+                            <span class="sim-result-value" id="linkETA" style="font-weight: 700;">—</span>
+                        </div>
+                        <div id="linkImpactMsg" style="margin-top: 12px; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(220,255,220,0.85); background: rgba(0,0,0,0.3); border-radius: 2px;"></div>
+                    </div>
+
                     <div id="metaCheckpoints" style="display: none;">
                         <div style="font-size: 12px; font-weight: 600; color: var(--text-dim); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; font-family: var(--font-display);">
                             Annual Checkpoints
@@ -2267,6 +2296,9 @@
 
         // Run simulator with defaults
         runSimulation();
+
+        // Link engine to Meta Reversa
+        engineToMetaLink();
     }
 
     // ===== ENGINE RECOMMENDATION =====
@@ -2512,6 +2544,88 @@
                     </div>
                 `;
             }).join('');
+
+        // Update engine link with new parameters
+        engineToMetaLink();
+    }
+
+    // ===== ENGINE <> META REVERSA LINK =====
+    function engineToMetaLink() {
+        const linkPanel = document.getElementById('engineLink');
+        if (!STATE.fgIndex || !STATE.btcPrice) return;
+
+        const target = parseFloat(document.getElementById('metaTarget').value) || 0.5;
+        const years = parseInt(document.getElementById('metaTimeline').value) || 4;
+        const weeklyBudget = parseFloat(document.getElementById('metaBudget').value) || 150;
+
+        const zone = getFgZone(STATE.fgIndex);
+        const adjustedWeekly = weeklyBudget * zone.multiplier;
+        const btcPerWeek = adjustedWeekly / STATE.btcPrice;
+        const btcPerMonth = btcPerWeek * 4.33;
+        const monthsToGoal = target / btcPerMonth;
+        const baseMonthsToGoal = target / ((weeklyBudget * 4.33) / STATE.btcPrice);
+        const monthsDiff = baseMonthsToGoal - monthsToGoal;
+
+        // Speed ratio vs 1.0x baseline
+        const speedRatio = zone.multiplier;
+        let speedLabel, speedColor;
+        if (speedRatio >= 2.0) { speedLabel = '2.0x — Maximum'; speedColor = '#00ff41'; }
+        else if (speedRatio >= 1.5) { speedLabel = '1.5x — Accelerated'; speedColor = '#00cc33'; }
+        else if (speedRatio >= 1.0) { speedLabel = '1.0x — Standard'; speedColor = '#888'; }
+        else if (speedRatio >= 0.75) { speedLabel = '0.75x — Conserving'; speedColor = '#ff8800'; }
+        else { speedLabel = '0.5x — Building Reserve'; speedColor = '#ff4444'; }
+
+        // ETA adjustment
+        let etaLabel, etaColor;
+        if (monthsDiff > 1) {
+            const m = Math.round(monthsDiff);
+            etaLabel = `${m} month${m > 1 ? 's' : ''} earlier`;
+            etaColor = '#00ff41';
+        } else if (monthsDiff < -1) {
+            const m = Math.round(Math.abs(monthsDiff));
+            etaLabel = `${m} month${m > 1 ? 's' : ''} later (reserve building)`;
+            etaColor = '#ff8800';
+        } else {
+            etaLabel = 'On track';
+            etaColor = '#888';
+        }
+
+        // Update UI
+        linkPanel.style.display = 'block';
+
+        const statusEl = document.getElementById('linkEngineStatus');
+        let actionText, actionColor;
+        if (zone.multiplier >= 1.5) { actionText = 'STRONG BUY'; actionColor = '#00ff41'; }
+        else if (zone.multiplier > 1.0) { actionText = 'BUY'; actionColor = '#00cc33'; }
+        else if (zone.multiplier === 1.0) { actionText = 'HOLD DCA'; actionColor = '#888'; }
+        else if (zone.multiplier >= 0.75) { actionText = 'REDUCE'; actionColor = '#ff8800'; }
+        else { actionText = 'MINIMUM'; actionColor = '#ff4444'; }
+
+        statusEl.textContent = actionText + ' — F&G ' + STATE.fgIndex;
+        statusEl.style.color = actionColor;
+
+        document.getElementById('linkMultiplier').textContent = zone.multiplier + 'x';
+        document.getElementById('linkMultiplier').style.color = zone.color;
+
+        document.getElementById('linkWeeklyDCA').textContent = formatUSD2(adjustedWeekly) + ' → ' + (btcPerWeek * 100000000).toFixed(0) + ' sats';
+        document.getElementById('linkWeeklyDCA').style.color = 'var(--text-primary)';
+
+        document.getElementById('linkAccumSpeed').textContent = speedLabel;
+        document.getElementById('linkAccumSpeed').style.color = speedColor;
+
+        document.getElementById('linkETA').textContent = etaLabel;
+        document.getElementById('linkETA').style.color = etaColor;
+
+        // Impact message
+        const msgEl = document.getElementById('linkImpactMsg');
+        if (zone.multiplier >= 1.5) {
+            msgEl.innerHTML = `<i class="fa-solid fa-bolt" style="color: #00ff41; margin-right: 6px;"></i><strong>Engine is boosting your goal.</strong> At ${zone.multiplier}x multiplier, you're accumulating ${(btcPerWeek * 100000000).toFixed(0)} sats/week instead of ${((weeklyBudget / STATE.btcPrice) * 100000000).toFixed(0)} sats. ETA for ${target} BTC: <strong>${Math.ceil(monthsToGoal)} months</strong> (vs ${Math.ceil(baseMonthsToGoal)} at 1.0x).`;
+        } else if (zone.multiplier < 1.0) {
+            const surplus = weeklyBudget - adjustedWeekly;
+            msgEl.innerHTML = `<i class="fa-solid fa-piggy-bank" style="color: #ff8800; margin-right: 6px;"></i><strong>Reserve building phase.</strong> Engine reduces DCA to ${formatUSD2(adjustedWeekly)}, saving ${formatUSD2(surplus)}/week to your Buildup Reserve. When F&G drops below 45, this reserve fuels accelerated accumulation toward your ${target} BTC goal.`;
+        } else {
+            msgEl.innerHTML = `<i class="fa-solid fa-equals" style="color: #888; margin-right: 6px;"></i><strong>Standard accumulation.</strong> Market is neutral — DCA runs at baseline ${formatUSD2(weeklyBudget)}/week. Your ${target} BTC goal is on track for ~${Math.ceil(baseMonthsToGoal)} months.`;
+        }
     }
 
     // ===== BACKTEST CHART =====
