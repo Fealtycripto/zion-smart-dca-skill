@@ -16,56 +16,50 @@
 
 ---
 
+## 🎯 Interactive Dashboard
+
+**[→ Open the Zion Smart DCA v4.2 Dashboard](dashboard/index.html)** — live market data, real-time engine decisions, simulator, Meta Reversa Calculator, and full financial summary. No install needed — runs in any browser.
+
+---
+
 ## The Problem
 
 Most retail investors lose money not because they pick the wrong assets — but because they make emotional decisions at the worst possible times. Standard DCA is blind: it buys the same amount every period regardless of market conditions, wasting capital in greed phases and under-accumulating during fear events.
 
 ## The Solution
 
-**Zion Smart DCA v4.0** is a 12-rule strategy skill powered by real-time CoinMarketCap data, built around **5 pillars** that adapt to the investor's reality:
+**Zion Smart DCA v4.2** is a 12-rule strategy skill powered by real-time CoinMarketCap data, built around **4 pillars** that adapt to the investor's reality:
 
 > **💡 Flexibility First:** The strategy is SMART precisely because it adapts to YOU.
 > Frequency is NOT fixed — choose daily, weekly, biweekly, or monthly.
 > Amount is NOT fixed — $10, $50, $100, $500, whatever fits your budget.
-> The system adjusts multipliers and signals regardless of your base amount or frequency.
+> The F&G multiplier applies DIRECTLY to your full DCA base. No 70/30 split.
 
-### Pillar 0 — Cycle Reading
+### Pillar 1 — Smart DCA (F&G Multiplier)
 
-The strategy starts by reading the macro cycle phase based on the Bitcoin halving:
+The F&G multiplier applies **directly** to your full DCA base amount. Surplus/deficit flows to and from the Buildup Reserve automatically.
 
-| Phase | Months Since Halving | Behavior |
-|-------|---------------------|----------|
-| 🟢 Accumulation | 0–12 | Maximum aggression — historical best entries |
-| 🔵 Expansion | 12–24 | Normal DCA — trend establishing |
-| 🟡 Euphoria | 24–36 | Defensive — reduce exposure, tighten stops |
-| 🔴 Distribution | 36–48 | Scaling out — take profits systematically |
-| ⚫ Post-Cycle | 48+ | Wait for next halving signal |
+| Signal | F&G Range | Multiplier | DCA (base $100) | Reserve Flow |
+|--------|-----------|------------|-----------------|--------------|
+| 😱 Extreme Fear | 0–24 | **2.0x** | $200 | Extra FROM Reserve |
+| 😰 Fear | 25–44 | **1.5x** | $150 | Extra FROM Reserve |
+| 😐 Neutral | 45–55 | **1.0x** | $100 | No movement |
+| 😊 Greed | 56–74 | **0.75x** | $75 | Surplus TO Reserve |
+| 🤑 Extreme Greed | 75–100 | **0.5x** | $50 | Surplus TO Reserve |
 
-### Pillar 1 — F&G Multiplier Scale
+> **v4.2 Change:** No more 70/30 budget split. The multiplier applies to 100% of your DCA base. Surplus from greed periods flows directly to the Buildup Reserve. Deficit during fear is funded from the reserve.
 
-| Signal | F&G Range | Multiplier | Example (base $100) |
-|--------|-----------|------------|---------------------|
-| 😱 Extreme Fear | 0–24 | **2.0x** | $140 |
-| 😰 Fear | 25–44 | **1.5x** | $105 |
-| 😐 Neutral | 45–55 | **1.0x** | $70 |
-| 😊 Greed | 56–74 | **0.75x** | $52.50 |
-| 🤑 Extreme Greed | 75–100 | **0.5x** | $35 |
-
-### Pillar 2 — Buildup Mode (Double-Layer Confirmation)
+### Pillar 2 — Buildup Reserve (Double-Layer Confirmation)
 
 Buildup activates only when **both conditions** are met:
 1. **RSI daily < 35** (oversold)
 2. **Context filters pass** — at least one of: price above 200WMA, MVRV < 1.0, ATH drop > 50%
 
-**Slot scale by market depth:**
-
-| Distance from ATH | Max Slots |
-|-------------------|-----------|
-| < 30% from ATH | 1–2 slots |
-| 30–60% from ATH | 3–5 slots |
-| > 60% from ATH | 6–10 slots |
-
-**Cooldown rule:** Buy up to 3 consecutive days, then stop and wait for new confirmation.
+**Execution rules:**
+- Max 3 orders per week
+- Max 1 order per day
+- 2.5% gap between limit orders
+- Limit orders only (no market orders)
 
 ### Pillar 3 — Scaling Out (Dual Confirmation)
 
@@ -73,9 +67,13 @@ Scaling out requires **both**:
 1. **RSI weekly > 70** (overbought on weekly timeframe)
 2. **Secondary confirmation** — at least one of: Pi Cycle Top, MVRV > 7, BTC Dominance < 40%
 
-### Reserve First Principle (Rule 4)
+- Sell 10–20% per signal
+- Max 2 signals per month
+- 14-day cooldown between sells
 
-30% of every budget is reserved. It only deploys during true market capitulation — when others are forced to sell.
+### Pillar 4 — Meta Reversa Calculator
+
+Work backwards from your BTC goal. Set a target (e.g., 0.5 BTC), timeline (e.g., 4 years), and your weekly budget — the engine calculates exactly what you need, factoring in Smart DCA boosts, and shows how current market conditions accelerate or slow your progress.
 
 ---
 
@@ -83,46 +81,28 @@ Scaling out requires **both**:
 
 ### 5-Year Backtest (2021–2026)
 
-> ⚠️ **Note:** Results being recalculated with v4.0 parameters. Values below are from v3.0 backtest — v4.0 expected to show improved risk-adjusted returns due to tighter F&G bands and cycle awareness.
-
 | Metric | Zion Smart DCA | Standard DCA | Buy & Hold |
 |--------|---------------|-------------|------------|
-| Total Return | **+56.4%** | +50.7% | +97.3% |
-| Sharpe Ratio | **1.768** | 1.699 | 1.67 |
-| Max Drawdown | **-44.6%** | -46.4% | -77.3% |
+| Total Return | **+55.4%** | +50.7% | +97.3% |
+| Sharpe Ratio | **1.783** | 1.699 | 1.67 |
+| Max Drawdown | **-44.58%** | -46.4% | -77.3% |
 | Win Rate | **59.0%** | 59.4% | N/A |
-| Profit Factor | **2.400** | 2.275 | N/A |
+| Profit Factor | **2.411** | 2.275 | N/A |
+| Buildup Events | **29** | 0 | N/A |
 
-> Zion Smart DCA outperforms Standard DCA by +5.7pp return with better risk-adjusted metrics (Sharpe 1.768 vs 1.699) and slightly lower max drawdown.
+> Zion Smart DCA outperforms Standard DCA by **+4.7pp** return with better risk-adjusted metrics (Sharpe 1.783 vs 1.699) and lower max drawdown.
 
 ### Live Period Simulation (Feb 13 – Jun 8, 2026 | Real Market Data)
-
-> ⚠️ **Note:** Results being recalculated with v4.0 parameters. The values below used v3.0 thresholds — v4.0's wider Extreme Fear band (0–24 vs 0–20) would have captured even more accumulation events.
 
 Using **real Fear & Greed data** from [Alternative.me](https://alternative.me/crypto/fear-and-greed-index/) and real BTC prices from Yahoo Finance:
 
 | Metric | Zion Smart DCA | Standard DCA |
 |--------|---------------|-------------|
-| BTC Accumulated | **0.031782 BTC** | 0.023624 BTC |
-| Extra BTC vs Standard | **+0.008158 BTC (+34.5%)** | — |
-| Portfolio Value | $2,005 | $1,490 |
-| Reserve Available | **$265 (ready to deploy)** | N/A |
+| BTC Accumulated | **0.0332329 BTC** | 0.023624 BTC |
+| Extra BTC vs Standard | **+0.009609 BTC (+40.7%)** | — |
+| Portfolio Value | $2,097 | $1,490 |
+| Reserve Available | **$230 (ready to deploy)** | N/A |
 | Buildup Events | **2** (F&G 23 + F&G 10) | N/A |
-
-**Why such a big difference?** Because the market spent **94% of weeks in Fear or Extreme Fear** during this period:
-
-| Multiplier Zone | Weeks | F&G Range | Buy (base $100) |
-|----------------|-------|-----------|-----------------|
-| 🔴 Extreme Fear (2x) | **8** | F&G 0–24 | $140 |
-| 🟡 Fear (1.5x) | **7** | F&G 25–44 | $105 |
-| ⚪ Neutral (1x) | **2** | F&G 45–55 | $70 |
-
-> Standard DCA bought $70 every single week. Zion Smart DCA averaged **$131.76/week** — buying $140 during 8 weeks of Extreme Fear — accumulating **34.5% more Bitcoin** for the same weekly budget.
-
-**Data sources:**
-- BTC price: [Yahoo Finance](https://finance.yahoo.com/quote/BTC-USD/) via yfinance
-- Fear & Greed Index: [Alternative.me](https://alternative.me/crypto/fear-and-greed-index/) (real historical data)
-- RSI 14-period: Wilder EMA method calculated from price data (same methodology as TradingView)
 
 ## Real-World Proof
 
@@ -158,6 +138,9 @@ python src/zion_dca_skill.py --budget 500 --frequency monthly
 
 # Run 5-year backtest
 python backtest/backtest.py --days 1825 --budget 100
+
+# Open the interactive dashboard (no install needed)
+open dashboard/index.html
 ```
 
 ## Project Structure
@@ -165,8 +148,10 @@ python backtest/backtest.py --days 1825 --budget 100
 ```
 zion-smart-dca-skill/
 ├── SKILL.md                 ← CMC Skill playbook (official format)
+├── dashboard/
+│   └── index.html           ← Interactive v4.2 dashboard (standalone)
 ├── src/
-│   ├── strategy.py          ← 12-rule strategy engine (v4.0)
+│   ├── strategy.py          ← 12-rule strategy engine (v4.2)
 │   ├── indicators.py        ← CMC Agent Hub integration
 │   ├── zion_dca_skill.py    ← Main skill entry point
 │   ├── agent.py             ← BNB AI Agent SDK (ERC-8004)
@@ -176,6 +161,10 @@ zion-smart-dca-skill/
 │   ├── backtest.py          ← Backtesting engine
 │   ├── data_loader.py       ← Historical BTC data (2021-2026)
 │   └── results_summary.json ← Full backtest results
+├── scripts/
+│   ├── analyze_multipliers.py  ← Multiplier analysis tools
+│   ├── analyze_trades.py       ← Trade analysis
+│   └── explore_cmc.py          ← CMC API explorer
 └── docs/
     └── strategy_rules.md    ← All 12 rules explained
 ```
@@ -184,8 +173,8 @@ zion-smart-dca-skill/
 
 1. **DCA Base** — fixed amount per period (daily/weekly/biweekly/monthly), no excuses
 2. **RSI Buildup Trigger** — RSI < 35 + context filters (200WMA, MVRV, ATH%) activates Buildup mode
-3. **F&G Multiplier Scale** — 0.5x to 2.0x based on market sentiment (v4.0 thresholds)
-4. **Reserve First** — 70% DCA + 30% reserve, always
+3. **F&G Multiplier Scale** — 0.5x to 2.0x applied directly to full DCA base (v4.2)
+4. **Buildup Reserve** — surplus from greed periods flows to reserve; deficit in fear draws from reserve
 5. **Never Sell Below PM** — never sell below average buy price (non-negotiable)
 6. **Income Scaling** — extra income ÷ 4 = DCA increase
 7. **BTC Floor (50%)** — portfolio never goes below 50% BTC
@@ -228,6 +217,7 @@ Brazilian tax optimization (R$35k monthly exemption threshold):
 - **CMC Agent Hub** (MCP Server — 5 tools)
 - **BNB AI Agent SDK** (ERC-8004 on-chain identity)
 - **yfinance** for historical BTC data
+- **Chart.js** for interactive backtest visualization
 
 ## On-chain Identity (ERC-8004)
 
@@ -236,7 +226,7 @@ This agent is registered on **BNB Smart Chain Testnet** via the ERC-8004 standar
 | Field | Value |
 |-------|-------|
 | **Wallet** | `0x4E9feDB6DFb93fe7Ae98E2d2Bfe4fb6398A568bd` |
-| **TX Hash** | [`0x4dcc42a27db87bc573c855edb0b0735a22548ce554042a8fbbd2519b8466b1c3`](https://testnet.bscscan.com/tx/0x4dcc42a27db87bc573c855edb0b0735a22548ce554042a8fbbd2519b8466b1c3) |
+| **TX Hash** | [`0x5b36774865ad295891d898ccca74b88ded502a593fa5624d0671e1cf37afd558`](https://testnet.bscscan.com/tx/0x5b36774865ad295891d898ccca74b88ded502a593fa5624d0671e1cf37afd558) |
 | **Network** | BSC Testnet (chain_id: 97) |
 | **Standard** | ERC-8004 (Trustless Agent Identity) |
 

@@ -262,7 +262,7 @@ Any strategy holding BTC would be negative in USD terms during this period.
 
 The relevant comparisons:
 1. **vs Standard DCA:** Zion lost -10.5% vs Standard DCA's -12.3% → **better performance**
-2. **BTC accumulated:** 0.031782 vs 0.023624 → **+34.5% more sats** (what matters long-term)
+2. **BTC accumulated:** 0.0332329 vs 0.023624 → **+40.7% more sats** (what matters long-term)
 3. **Reserve:** $230 still available, ready to deploy at next capitulation event
 4. **The strategy is designed for 3–5 year cycles, not 4-month snapshots**
 
@@ -431,7 +431,7 @@ Three reasons:
    sell during -50%+ drawdowns. A strategy only works if you can stick to it.
 
 3. **Correct comparison:** vs **Standard DCA** (the real alternative for regular investors),
-   Zion outperforms: +56.4% vs +50.7% total return, Sharpe 1.768 vs 1.12.
+   Zion outperforms: +55.4% vs +50.7% total return, Sharpe 1.783 vs 1.699.
 
 ---
 
