@@ -1,39 +1,70 @@
-# Zion Smart DCA — BTC Accumulation Strategy Skill
+# Zion Smart DCA — protótipo educacional para Bitcoin
 
-<div align="center">
+Criado por **Rony Costa (Zion)**, fundador do [CriptoZion](https://criptozion.xyz). Metodologia e projeto de software em evolução para organização de aportes, gestão de caixa e decisões baseadas em regras.
 
-![Zion Smart DCA Logo](docs/logo.png)
+Este repositório público reúne um motor em Python, um dashboard HTML e arquivos de simulação e backtesting. O projeto foi preparado para o contexto do BNB Hack 2026; isso não comprova premiação, auditoria ou operação financeira autônoma em produção.
 
-**An AI-powered CMC Skill that removes emotion from Bitcoin accumulation.**
+## O que existe e qual é o estágio
 
-[![BNB Hack 2026](https://img.shields.io/badge/BNB%20Hack-2026-yellow?style=flat-square)](https://dorahacks.io/hackathon/bnbhack-twt-cmc/)
-[![Track](https://img.shields.io/badge/Track-Strategy%20Skills-blue?style=flat-square)](#)
-[![Python](https://img.shields.io/badge/Python-3.11+-green?style=flat-square)](#)
-[![CMC Agent Hub](https://img.shields.io/badge/CMC-Agent%20Hub-orange?style=flat-square)](#)
-[![License](https://img.shields.io/badge/License-MIT-white?style=flat-square)](#)
+| Componente | Evidência nos arquivos | Estágio e limite |
+|---|---|---|
+| Motor de decisão | [src/strategy.py](src/strategy.py) e [entrada CLI](src/zion_dca_skill.py) | Calcula decisões a partir dos sinais recebidos; não comprova execução de ordens reais. |
+| Dashboard educacional | [dashboard/index.html](dashboard/index.html) | Consulta preço/Fear & Greed em APIs públicas; RSI e indicadores on-chain são simulados. Valores de contingência e visualizações não devem ser confundidos com dados atuais validados. |
+| Backtesting | [backtest/](backtest/) | Experimento histórico com cache de preços e índice de sentimento real ou proxy. Exige revisão de premissas antes de comparar estratégias. |
+| Adaptador de dados | [src/mcp_client.py](src/mcp_client.py) | Usa APIs REST; o handshake MCP está marcado como TODO. Não é integração MCP completa. |
+| API e jobs de agentes | [src/server.py](src/server.py) e [src/commerce.py](src/commerce.py) | Protótipos. O código descreve verificação e liberação de escrow como etapas de uma implementação completa futura. |
 
-</div>
+## Comece pelo dashboard
 
----
+O link para o HTML no GitHub mostra o código-fonte. Para ver a interface, baixe ou clone o projeto e sirva a pasta localmente. Não é necessário instalar as dependências da aplicação Python para esse caminho.
 
-## 🎯 Interactive Dashboard
+```sh
+git clone https://github.com/Fealtycripto/zion-smart-dca-skill.git
+cd zion-smart-dca-skill
+python -m http.server 8765 --bind 127.0.0.1
+```
 
-**[→ Open the Zion Smart DCA v4.2 Dashboard](dashboard/index.html)** — live market data, real-time engine decisions, simulator, Meta Reversa Calculator, and full financial summary. No install needed — runs in any browser.
+Abra [http://127.0.0.1:8765/dashboard/](http://127.0.0.1:8765/dashboard/) no navegador. O dashboard usa fontes/CDNs e APIs externas; não é totalmente offline. Encerre o servidor com `Ctrl+C`.
 
----
+**Validação documental em 12/10/2026:** o caminho de servidor estático e a renderização local foram conferidos. Isso não valida os cálculos da estratégia, a disponibilidade de cada API ou a atualidade de todos os indicadores.
 
-## The Problem
+## CLI e API Python — instruções ainda não revalidadas
 
-Most retail investors lose money not because they pick the wrong assets — but because they make emotional decisions at the worst possible times. Standard DCA is blind: it buys the same amount every period regardless of market conditions, wasting capital in greed phases and under-accumulating during fear events.
+O código declara Python 3.11+ e dependências em [requirements.txt](requirements.txt), atualmente sem versões fixadas. A instalação completa e a execução com serviços externos não foram revalidadas nesta revisão documental.
 
-## The Solution
+Se for avaliar a CLI, use um ambiente virtual local:
 
-**Zion Smart DCA v4.2** is a 12-rule strategy skill powered by real-time CoinMarketCap data, built around **4 pillars** that adapt to the investor's reality:
+```sh
+python -m venv .venv
+# Windows PowerShell:
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
 
-> **💡 Flexibility First:** The strategy is SMART precisely because it adapts to YOU.
-> Frequency is NOT fixed — choose daily, weekly, biweekly, or monthly.
-> Amount is NOT fixed — $10, $50, $100, $500, whatever fits your budget.
-> The F&G multiplier applies DIRECTLY to your full DCA base. No 70/30 split.
+No Linux/macOS, use `source .venv/bin/activate` e `cp .env.example .env`. O [.env.example](.env.example) existe; preencha somente sua configuração local. Não envie `.env`, chaves ou credenciais ao GitHub.
+
+Comandos presentes na interface do código, **não executados nesta revisão**:
+
+```sh
+python src/zion_dca_skill.py --budget 100 --frequency weekly
+python src/zion_dca_skill.py --budget 50 --frequency daily
+python backtest/backtest.py --budget 100 --start 2021-01-01
+```
+
+O backtest pode consultar fontes externas e sobrescrever relatórios locais. Leia o código e preserve os resultados existentes antes de executá-lo. Registro on-chain, conexão de carteiras e pagamento de jobs não fazem parte deste início rápido.
+
+## Simulação, dados e versões
+
+Os [resultados históricos](backtest/results_summary.json), o [relatório](backtest/report.md) e a [simulação de período](docs/live_simulation.json) são artefatos experimentais. Dados reais de mercado como entrada não transformam uma simulação em histórico de investimentos reais ou paper trading acompanhado em tempo real.
+
+Há uma divergência de versão pública a resolver: a apresentação dos pilares abaixo usa **v4.2**, enquanto o resultado salvo e partes do Python identificam **v4.0**. O resultado salvo declara divisão **70/30**; o texto v4.2 descreve o multiplicador aplicado à base integral. Os aportes totais das estratégias comparadas no JSON também diferem. Portanto, esse resultado não comprova desempenho da v4.2 nem uma comparação com fluxos de caixa equivalentes.
+
+Antes de tirar conclusões, documente versão, período, origem e qualidade dos dados, proxy de sentimento, capital/reserva, frequência, taxas e slippage. Custos, execução e comparabilidade não foram auditados nesta revisão.
+
+## Referência técnica existente
+
+Os pilares, multiplicadores, limites e as 12 regras a seguir foram preservados do README anterior. Descrevem a versão apresentada pelo projeto e não são recomendação personalizada nem validação das divergências acima. Esta revisão altera somente documentação.
 
 ### Pillar 1 — Smart DCA (F&G Multiplier)
 
@@ -77,98 +108,6 @@ Work backwards from your BTC goal. Set a target (e.g., 0.5 BTC), timeline (e.g.,
 
 ---
 
-## Proven Results
-
-### 5-Year Backtest (2021–2026)
-
-| Metric | Zion Smart DCA | Standard DCA | Buy & Hold |
-|--------|---------------|-------------|------------|
-| Total Return | **+55.4%** | +50.7% | +97.3% |
-| Sharpe Ratio | **1.783** | 1.699 | 1.67 |
-| Max Drawdown | **-44.58%** | -46.4% | -77.3% |
-| Win Rate | **59.0%** | 59.4% | N/A |
-| Profit Factor | **2.411** | 2.275 | N/A |
-| Buildup Events | **29** | 0 | N/A |
-
-> Zion Smart DCA outperforms Standard DCA by **+4.7pp** return with better risk-adjusted metrics (Sharpe 1.783 vs 1.699) and lower max drawdown.
-
-### Live Period Simulation (Feb 13 – Jun 8, 2026 | Real Market Data)
-
-Using **real Fear & Greed data** from [Alternative.me](https://alternative.me/crypto/fear-and-greed-index/) and real BTC prices from Yahoo Finance:
-
-| Metric | Zion Smart DCA | Standard DCA |
-|--------|---------------|-------------|
-| BTC Accumulated | **0.0332329 BTC** | 0.023624 BTC |
-| Extra BTC vs Standard | **+0.009609 BTC (+40.7%)** | — |
-| Portfolio Value | $2,097 | $1,490 |
-| Reserve Available | **$230 (ready to deploy)** | N/A |
-| Buildup Events | **2** (F&G 23 + F&G 10) | N/A |
-
-## Real-World Proof
-
-This strategy has been live since **February 13, 2026** tracking real BTC purchases. The author applies the exact same 12 rules personally — the live simulation above reflects what those conditions looked like using real market data from that period.
-
-## CMC Agent Hub Integration
-
-The skill uses **5 CMC MCP tools** for real-time decision making:
-
-```
-get_global_metrics_latest       → Fear & Greed Index
-get_crypto_technical_analysis   → RSI 14-period (BTC)
-get_crypto_quotes_latest        → Current BTC price
-get_upcoming_macro_events       → Macro context
-trending_crypto_narratives      → Market sentiment
-```
-
-## Quick Start
-
-```bash
-git clone https://github.com/Fealtycripto/zion-smart-dca-skill
-cd zion-smart-dca-skill
-pip install -r requirements.txt
-cp .env.example .env   # add your CMC API key
-
-# Run a live decision (default: $100 weekly)
-python src/zion_dca_skill.py
-
-# Run with custom frequency and budget
-python src/zion_dca_skill.py --budget 50 --frequency daily
-python src/zion_dca_skill.py --budget 200 --frequency biweekly
-python src/zion_dca_skill.py --budget 500 --frequency monthly
-
-# Run 5-year backtest
-python backtest/backtest.py --days 1825 --budget 100
-
-# Open the interactive dashboard (no install needed)
-open dashboard/index.html
-```
-
-## Project Structure
-
-```
-zion-smart-dca-skill/
-├── SKILL.md                 ← CMC Skill playbook (official format)
-├── dashboard/
-│   └── index.html           ← Interactive v4.2 dashboard (standalone)
-├── src/
-│   ├── strategy.py          ← 12-rule strategy engine (v4.2)
-│   ├── indicators.py        ← CMC Agent Hub integration
-│   ├── zion_dca_skill.py    ← Main skill entry point
-│   ├── agent.py             ← BNB AI Agent SDK (ERC-8004)
-│   ├── commerce.py          ← ERC-8183 Agentic Commerce jobs
-│   └── server.py            ← FastAPI job server (ERC-8183 endpoints)
-├── backtest/
-│   ├── backtest.py          ← Backtesting engine
-│   ├── data_loader.py       ← Historical BTC data (2021-2026)
-│   └── results_summary.json ← Full backtest results
-├── scripts/
-│   ├── analyze_multipliers.py  ← Multiplier analysis tools
-│   ├── analyze_trades.py       ← Trade analysis
-│   └── explore_cmc.py          ← CMC API explorer
-└── docs/
-    └── strategy_rules.md    ← All 12 rules explained
-```
-
 ## The 12 Rules
 
 1. **DCA Base** — fixed amount per period (daily/weekly/biweekly/monthly), no excuses
@@ -195,128 +134,28 @@ zion-smart-dca-skill/
 | 🟡 Flash Crash | BTC drops >30% in 24h | Deploy 100% reserve immediately |
 | ⚫ Black Monday | Crypto + TradFi simultaneous crash | Full defensive — cash only for 14 days |
 
-## Fiscal Layer
+## Limitações e próximos passos
 
-Brazilian tax optimization (R$35k monthly exemption threshold):
-- Track monthly sell volume in BRL
-- Alert when approaching R$35k limit
-- Suggest splitting sales across months when possible
+- Reconciliar v4.0/v4.2 e identificar exatamente qual implementação gerou cada resultado, sem mudar parâmetros silenciosamente.
+- Rotular dados reais, proxies e simulações também no dashboard e nos relatórios gerados.
+- Validar custos, reserva e fluxos de caixa comparáveis antes de divulgar conclusões de backtest.
+- Validar MCP e jobs ponta a ponta antes de declarar integração completa ou pagamentos on-chain disponíveis.
+- Revalidar qualquer regra tributária com fontes oficiais atuais; os textos fiscais históricos do projeto não comprovam aplicabilidade.
 
-## Mission Milestones
+As imagens em [docs/screenshots/](docs/screenshots/) são capturas já existentes do protótipo, não evidência de resultados financeiros reais. A documentação técnica da skill está em [SKILL.md](SKILL.md).
 
-| Marco | Target | Status |
-|-------|--------|--------|
-| 🥉 Bronze | 0.1 BTC accumulated | In progress |
-| 🥈 Silver | 0.5 BTC accumulated | — |
-| 🥇 Gold | 1.0 BTC accumulated | — |
-| 💎 Diamond | 2.1 BTC (full coin + reserve) | — |
+## Tecnologias e licença
 
-## Built With
+Python, pandas, NumPy, requests, python-dotenv, yfinance, matplotlib, FastAPI e bnbagent constam dos arquivos/dependências. O dashboard usa HTML/CSS/JavaScript e Chart.js.
 
-- **Python 3.11** + pandas + numpy
-- **CMC Agent Hub** (MCP Server — 5 tools)
-- **BNB AI Agent SDK** (ERC-8004 on-chain identity)
-- **yfinance** for historical BTC data
-- **Chart.js** for interactive backtest visualization
+Licença existente: [MIT](LICENSE). Preserve o aviso de copyright e os termos da licença nas reutilizações pertinentes. Serviços de dados têm termos próprios.
 
-## On-chain Identity (ERC-8004)
-
-This agent is registered on **BNB Smart Chain Testnet** via the ERC-8004 standard.
-
-| Field | Value |
-|-------|-------|
-| **Wallet** | `0x4E9feDB6DFb93fe7Ae98E2d2Bfe4fb6398A568bd` |
-| **TX Hash** | [`0x5b36774865ad295891d898ccca74b88ded502a593fa5624d0671e1cf37afd558`](https://testnet.bscscan.com/tx/0x5b36774865ad295891d898ccca74b88ded502a593fa5624d0671e1cf37afd558) |
-| **Network** | BSC Testnet (chain_id: 97) |
-| **Standard** | ERC-8004 (Trustless Agent Identity) |
-
-```bash
-# Register agent on BNB testnet
-python src/agent.py --register
-
-# View agent identity card
-python src/agent.py --info
-
-# Start ERC-8183 job server
-python src/agent.py --serve
-```
-
-## ERC-8183 Agentic Commerce
-
-Zion Smart DCA exposes its analysis capabilities as **paid jobs** via the [ERC-8183](https://eips.ethereum.org/EIPS/eip-8183) Agentic Commerce standard. Other AI agents can discover, purchase, and consume DCA analysis through a standard REST API.
-
-### Available Jobs
-
-| Job Type | Description | Price |
-|----------|-------------|-------|
-| `analyze_market` | Real-time market analysis + DCA recommendation | $0.50 / 0.001 BNB |
-| `backtest_period` | Historical backtest with performance comparison | $2.00 / 0.004 BNB |
-| `portfolio_check` | Scaling Out analysis + milestone check | $0.25 / 0.0005 BNB |
-
-### API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/health` | Server health check |
-| `GET` | `/agent-card` | ERC-8004 agent identity card |
-| `GET` | `/jobs` | List available job types (ERC-8183 catalog) |
-| `POST` | `/jobs/analyze` | Execute market analysis job |
-| `POST` | `/jobs/backtest` | Execute backtest job |
-| `POST` | `/jobs/portfolio` | Execute portfolio check job |
-| `GET` | `/jobs/{job_id}` | Query job status |
-
-### Quick Start — Job Server
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Start the ERC-8183 job server
-python src/agent.py --serve
-# OR directly:
-uvicorn src.server:app --host 0.0.0.0 --port 8000 --reload
-
-# Open interactive docs
-# http://localhost:8000/docs
-```
-
-### Example — Agent-to-Agent Request
-
-```python
-import requests
-
-# 1. Discover available jobs
-jobs = requests.get("http://localhost:8000/jobs").json()
-
-# 2. Request market analysis
-result = requests.post("http://localhost:8000/jobs/analyze", json={
-    "budget_usd": 100,
-    "frequency": "weekly",
-    "btc_pct": 0.54,
-}).json()
-
-print(result["result"]["decision"]["decision"]["action"])  # "BUY"
-print(result["result"]["decision"]["decision"]["multiplier"])  # 2.0
-```
-
-### ERC-8183 Flow
-
-```
-┌──────────────────┐    ┌─────────────────────┐    ┌──────────────────┐
-│  Requesting Agent │──>│  ERC-8183 Escrow     │──>│  Zion Smart DCA  │
-│  (any AI agent)   │   │  (on-chain payment)  │   │  (job provider)  │
-│                   │<──│                      │<──│                  │
-│  Receives result  │   │  Releases payment    │   │  Returns analysis│
-└──────────────────┘    └─────────────────────┘    └──────────────────┘
-```
-
-## Author
+## Autor e links
 
 **Rony Costa (Zion)** ([@Fealtycripto](https://github.com/Fealtycripto)), conhecido também como Fealty. Empreendedor, criador de conteúdo, fundador do [CriptoZion](https://criptozion.xyz) e criador da **Zion Smart DCA**, metodologia e projeto de software em evolução.
 
-Versão editorial **BIO-1.0**. [Minicurrículo público](https://github.com/Fealtycripto/Fealtycripto/blob/main/MINICURRICULO.md). A revisão biográfica não altera a versão operacional ou as regras descritas neste repositório.
+Versão editorial **BIO-1.0**. [Minicurrículo público](https://github.com/Fealtycripto/Fealtycripto/blob/main/MINICURRICULO.md). A versão editorial não altera a versão operacional ou as regras do projeto.
 
----
+**English:** Experimental Bitcoin DCA tools: Python engine, educational dashboard and historical simulations. Some indicators are simulated; MCP and on-chain job settlement are incomplete. Saved backtests require version and cash-flow reconciliation before performance claims.
 
-*Submitted to BNB Hack 2026 — Track 2: Strategy Skills*  
-*CoinMarketCap × BNB Chain × Trust Wallet*
+Conteúdo educacional. Backtests não garantem retorno e não comprovam resultados reais.
