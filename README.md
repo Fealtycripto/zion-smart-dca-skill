@@ -11,7 +11,9 @@ Este repositório público reúne um motor em Python, um dashboard HTML e arquiv
 | Motor de decisão | [src/strategy.py](src/strategy.py) e [entrada CLI](src/zion_dca_skill.py) | Calcula decisões a partir dos sinais recebidos; não comprova execução de ordens reais. |
 | Dashboard educacional | [dashboard/index.html](dashboard/index.html) | Consulta preço/Fear & Greed em APIs públicas; RSI e indicadores on-chain são simulados. Valores de contingência e visualizações não devem ser confundidos com dados atuais validados. |
 | Backtesting | [backtest/](backtest/) | Experimento histórico com cache de preços e índice de sentimento real ou proxy. Exige revisão de premissas antes de comparar estratégias. |
-| Adaptador de dados | [src/mcp_client.py](src/mcp_client.py) | Usa APIs REST; o handshake MCP está marcado como TODO. Não é integração MCP completa. |
+| Adaptador CMC existente | [src/mcp_client.py](src/mcp_client.py) | Usa APIs REST; a conexão MCP com um serviço CMC externo não foi validada. |
+| Interface MCP local | [src/mcp_server.py](src/mcp_server.py) | Descoberta e chamadas por stdio validadas; calcula sobre sinais fornecidos pelo cliente, sem APIs, chaves ou ordens. |
+| Coleta pública opcional | [scripts/fetch_public_ohlcv.py](scripts/fetch_public_ohlcv.py) | CCXT para candles fechados BTC/ETH em Kraken/Coinbase, com origem e consulta registradas. |
 | API e jobs de agentes | [src/server.py](src/server.py) e [src/commerce.py](src/commerce.py) | Protótipos. O código descreve verificação e liberação de escrow como etapas de uma implementação completa futura. |
 
 ## Comece pelo dashboard
@@ -28,9 +30,9 @@ Abra [http://127.0.0.1:8765/dashboard/](http://127.0.0.1:8765/dashboard/) no nav
 
 **Validação documental em 12/10/2026:** o caminho de servidor estático e a renderização local foram conferidos. Isso não valida os cálculos da estratégia, a disponibilidade de cada API ou a atualidade de todos os indicadores.
 
-## CLI e API Python — instruções ainda não revalidadas
+## CLI e API Python
 
-O código declara Python 3.11+ e dependências em [requirements.txt](requirements.txt), atualmente sem versões fixadas. A instalação completa e a execução com serviços externos não foram revalidadas nesta revisão documental.
+O código declara Python 3.11+ e dependências em [requirements.txt](requirements.txt), atualmente sem versões fixadas. Instalação e ajuda da CLI foram validadas em ambiente virtual Windows/Python 3.14 em 12/10/2026; `pip check` não encontrou conflitos. Serviços externos com credenciais e liquidação on-chain não foram validados.
 
 Se for avaliar a CLI, use um ambiente virtual local:
 
@@ -44,7 +46,7 @@ Copy-Item .env.example .env
 
 No Linux/macOS, use `source .venv/bin/activate` e `cp .env.example .env`. O [.env.example](.env.example) existe; preencha somente sua configuração local. Não envie `.env`, chaves ou credenciais ao GitHub.
 
-Comandos presentes na interface do código, **não executados nesta revisão**:
+Comandos da interface da CLI. A ajuda foi validada; decisões com APIs externas e reexecução integral do backtest dependem dos dados e da configuração:
 
 ```sh
 python src/zion_dca_skill.py --budget 100 --frequency weekly
@@ -53,6 +55,24 @@ python backtest/backtest.py --budget 100 --start 2021-01-01
 ```
 
 O backtest pode consultar fontes externas e sobrescrever relatórios locais. Leia o código e preserve os resultados existentes antes de executá-lo. Registro on-chain, conexão de carteiras e pagamento de jobs não fazem parte deste início rápido.
+
+## Interfaces opcionais validadas localmente
+
+Instale no mesmo ambiente virtual, somente se precisar destas interfaces:
+
+```sh
+python -m pip install -r requirements-research.txt
+# Coleta somente leitura; o arquivo de saída não pode já existir:
+python scripts/fetch_public_ohlcv.py --exchange kraken --symbol BTC/USD --days 7 --output btc-kraken-1h.json
+# Servidor MCP local por stdio, para um cliente MCP iniciar como subprocesso:
+python src/mcp_server.py
+```
+
+O MCP expõe `strategy_info` e `evaluate_signals`; recebe orçamento, preço, Fear & Greed e RSI diário explicitamente. Os demais campos usam os valores padrão do motor, listados em `assumptions`; não representam uma carteira ou indicadores observados. Não busca sinais sozinho, não lê carteiras e não executa ordens. O motor permanece v4.0; a interface informa essa versão e a origem `caller_provided`. O ensaio por stdio confirmou descoberta, chamada e rejeição de preço inválido.
+
+A coleta CCXT foi avaliada com BTC/ETH em Kraken/Coinbase: 668 candles fechados na amostra de sete dias, sem lacunas observadas. Isso não garante disponibilidade futura das origens. O adaptador não substitui automaticamente o loader histórico ou as APIs existentes.
+
+Backtesting.py foi avaliado separadamente como referência local em três cenários sintéticos de custos. Não foi incorporado às dependências deste projeto; o ensaio não valida a rentabilidade da Zion Smart DCA.
 
 ## Simulação, dados e versões
 
@@ -64,7 +84,7 @@ Antes de tirar conclusões, documente versão, período, origem e qualidade dos 
 
 ## Referência técnica existente
 
-Os pilares, multiplicadores, limites e as 12 regras a seguir foram preservados do README anterior. Descrevem a versão apresentada pelo projeto e não são recomendação personalizada nem validação das divergências acima. Esta revisão altera somente documentação.
+Os pilares, multiplicadores, limites e as 12 regras a seguir foram preservados do README anterior. Descrevem a versão apresentada pelo projeto e não são recomendação personalizada nem validação das divergências acima. As melhorias de procedência e interfaces opcionais não alteram esses parâmetros nem os cálculos do motor existente.
 
 ### Pillar 1 — Smart DCA (F&G Multiplier)
 
@@ -137,9 +157,9 @@ Work backwards from your BTC goal. Set a target (e.g., 0.5 BTC), timeline (e.g.,
 ## Limitações e próximos passos
 
 - Reconciliar v4.0/v4.2 e identificar exatamente qual implementação gerou cada resultado, sem mudar parâmetros silenciosamente.
-- Rotular dados reais, proxies e simulações também no dashboard e nos relatórios gerados.
+- O dashboard identifica cada fonte e sua contingência, mantém indicadores sintéticos rotulados e separa o resultado salvo v4.0 do simulador visual v4.2. O relatório gerado explicita os limites da comparação.
 - Validar custos, reserva e fluxos de caixa comparáveis antes de divulgar conclusões de backtest.
-- Validar MCP e jobs ponta a ponta antes de declarar integração completa ou pagamentos on-chain disponíveis.
+- A interface MCP local foi validada por stdio; integrações externas CMC, autenticação e liquidação de jobs on-chain continuam sendo frentes distintas.
 - Revalidar qualquer regra tributária com fontes oficiais atuais; os textos fiscais históricos do projeto não comprovam aplicabilidade.
 
 As imagens em [docs/screenshots/](docs/screenshots/) são capturas já existentes do protótipo, não evidência de resultados financeiros reais. A documentação técnica da skill está em [SKILL.md](SKILL.md).
@@ -156,6 +176,6 @@ Licença existente: [MIT](LICENSE). Preserve o aviso de copyright e os termos da
 
 Versão editorial **BIO-1.0**. [Minicurrículo público](https://github.com/Fealtycripto/Fealtycripto/blob/main/MINICURRICULO.md). A versão editorial não altera a versão operacional ou as regras do projeto.
 
-**English:** Experimental Bitcoin DCA tools: Python engine, educational dashboard and historical simulations. Some indicators are simulated; MCP and on-chain job settlement are incomplete. Saved backtests require version and cash-flow reconciliation before performance claims.
+**English:** Experimental Bitcoin DCA tools: Python engine, educational dashboard, historical simulations, optional public-candle collector and locally validated MCP tools over caller-provided signals. Some indicators are simulated; external CMC MCP and on-chain settlement remain unvalidated. Saved backtests require version and cash-flow reconciliation before performance claims.
 
 Conteúdo educacional. Backtests não garantem retorno e não comprovam resultados reais.

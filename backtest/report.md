@@ -21,38 +21,16 @@
 | Final Value | **$39,570** | $42,806 | $56,042 |
 | Buildup Events | **29** | N/A | N/A |
 
-## Key Insights
+## Interpretação e limites da comparação
 
-- Zion Smart DCA outperforms Standard DCA by **+4.7pp** in total return
-- Max drawdown reduced by **-1.8pp** vs Standard DCA
-- Sharpe Ratio improvement: **+0.084** (higher = better risk-adjusted return)
-- Sortino Ratio improvement: **+0.508** (better downside protection)
-- ROI per $1 invested: **$1.554** vs $1.507 (DCA)
-- Buildup events successfully deployed reserve at 29 market dip moments
-
-## Why Not Just Buy & Hold?
-
-Buy & Hold showed a higher raw return (97.3%) — but this comparison is misleading for three reasons:
-
-**1. Capital requirements are incompatible.**
-Buy & Hold requires the full $28,400 upfront on Day 1. Zion Smart DCA requires only $100.0/week.
-The realistic alternative for weekly earners is NOT Buy & Hold — it's Standard DCA.
-Against Standard DCA, Zion outperforms by +4.7pp.
-
-**2. The -77% drawdown is psychologically unsurvivable.**
-During 2022, BTC fell from $69k to $15k — a 77.3% peak-to-trough decline over 12 months.
-Research shows >90% of retail investors panic-sell before recovery in such scenarios.
-A strategy that exists on paper but gets abandoned is worth nothing.
-Zion DCA's -44.6% max drawdown is painful but within the range humans can sustain.
-
-**3. Period dependency — B&H is extremely start-date sensitive.**
-This backtest begins 2021-01-01 at ~$31,972 — BTC nearly tripled within 10 months.
-Had the backtest started Nov 2021 (BTC peak at $69k), Buy & Hold would show negative results today.
-Zion Smart DCA would still be positive, as it buys more during the bear market.
-
-**Conclusion:** Zion Smart DCA is the optimal strategy for someone accumulating BTC
-from regular income — not lump-sum investing. Its edge is risk-adjusted return,
-psychological sustainability, and capital accessibility.
+Estes números são resultados de uma simulação, não de investimentos reais.
+Os métodos têm aportes totais e fluxos de caixa diferentes. Diferenças de retorno,
+Sharpe ou drawdown não demonstram superioridade em condições equivalentes.
+Buy & Hold pressupõe capital inicial; DCA pressupõe aportes periódicos. Uma comparação
+exige conciliar capital, reserva, datas, taxas e execução antes de tirar conclusões.
+Não há evidência suficiente neste relatório para afirmar uma estratégia ótima,
+comportamento psicológico dos investidores ou retorno em outros períodos.
+O resultado é identificado como v4.0, com divisão 70/30; não valida a versão visual v4.2.
 
 ## Risks & Caveats
 - Past performance does not guarantee future results
