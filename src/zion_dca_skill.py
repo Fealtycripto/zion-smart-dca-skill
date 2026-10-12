@@ -16,6 +16,11 @@ import argparse
 import os
 from pathlib import Path
 
+# Preserve Unicode output in Windows terminals and redirected pipes.
+for stream in (sys.stdout, sys.stderr):
+    if hasattr(stream, "reconfigure"):
+        stream.reconfigure(encoding="utf-8")
+
 # Allow running from project root or src/
 sys.path.insert(0, str(Path(__file__).parent))
 

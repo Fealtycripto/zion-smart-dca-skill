@@ -278,38 +278,16 @@ def save_results(zion: dict, dca: dict, bh: dict, cfg: dict, df_weekly: pd.DataF
 | Final Value | **${zion['final_value']:,.0f}** | ${dca['final_value']:,.0f} | ${bh['final_value']:,.0f} |
 | Buildup Events | **{zion['buildup_events']}** | N/A | N/A |
 
-## Key Insights
+## Interpretação e limites da comparação
 
-- Zion Smart DCA outperforms Standard DCA by **+{zion['total_return_pct'] - dca['total_return_pct']:.1f}pp** in total return
-- Max drawdown reduced by **{abs(zion['max_drawdown_pct']) - abs(dca['max_drawdown_pct']):.1f}pp** vs Standard DCA
-- Sharpe Ratio improvement: **+{zion['sharpe_ratio'] - dca['sharpe_ratio']:.3f}** (higher = better risk-adjusted return)
-- Sortino Ratio improvement: **+{zion['sortino_ratio'] - dca['sortino_ratio']:.3f}** (better downside protection)
-- ROI per $1 invested: **${zion['final_value']/zion['total_invested']:.3f}** vs ${dca['final_value']/dca['total_invested']:.3f} (DCA)
-- Buildup events successfully deployed reserve at {zion['buildup_events']} market dip moments
-
-## Why Not Just Buy & Hold?
-
-Buy & Hold showed a higher raw return ({bh['total_return']:.1f}%) — but this comparison is misleading for three reasons:
-
-**1. Capital requirements are incompatible.**
-Buy & Hold requires the full ${bh['total_invested']:,.0f} upfront on Day 1. Zion Smart DCA requires only ${cfg['weekly_budget']}/week.
-The realistic alternative for weekly earners is NOT Buy & Hold — it's Standard DCA.
-Against Standard DCA, Zion outperforms by +{zion['total_return_pct'] - dca['total_return_pct']:.1f}pp.
-
-**2. The -77% drawdown is psychologically unsurvivable.**
-During 2022, BTC fell from $69k to $15k — a 77.3% peak-to-trough decline over 12 months.
-Research shows >90% of retail investors panic-sell before recovery in such scenarios.
-A strategy that exists on paper but gets abandoned is worth nothing.
-Zion DCA's {zion['max_drawdown_pct']:.1f}% max drawdown is painful but within the range humans can sustain.
-
-**3. Period dependency — B&H is extremely start-date sensitive.**
-This backtest begins {cfg['start_date']} at ~${float(df_weekly.iloc[0]['Close']):,.0f} — BTC nearly tripled within 10 months.
-Had the backtest started Nov 2021 (BTC peak at $69k), Buy & Hold would show negative results today.
-Zion Smart DCA would still be positive, as it buys more during the bear market.
-
-**Conclusion:** Zion Smart DCA is the optimal strategy for someone accumulating BTC
-from regular income — not lump-sum investing. Its edge is risk-adjusted return,
-psychological sustainability, and capital accessibility.
+Estes números são resultados de uma simulação, não de investimentos reais.
+Os métodos têm aportes totais e fluxos de caixa diferentes. Diferenças de retorno,
+Sharpe ou drawdown não demonstram superioridade em condições equivalentes.
+Buy & Hold pressupõe capital inicial; DCA pressupõe aportes periódicos. Uma comparação
+exige conciliar capital, reserva, datas, taxas e execução antes de tirar conclusões.
+Não há evidência suficiente neste relatório para afirmar uma estratégia ótima,
+comportamento psicológico dos investidores ou retorno em outros períodos.
+O resultado é identificado como v4.0, com divisão 70/30; não valida a versão visual v4.2.
 
 ## Risks & Caveats
 - Past performance does not guarantee future results

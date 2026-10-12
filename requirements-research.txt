@@ -1,0 +1,3 @@
+# Optional read-only market data and local MCP interfaces. Core rules are unchanged.
+ccxt==4.5.85
+mcp==2.3.0

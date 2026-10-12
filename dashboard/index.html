@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zion Smart DCA v4.2 — AI-Powered Bitcoin Accumulation Engine | BNB Hack 2026</title>
-    <meta name="description" content="Zion Smart DCA v4.2: An AI-powered, sentiment-driven Bitcoin DCA engine with Fear & Greed integration, Buildup Reserve protocol, and Meta Reversa Calculator. Submitted for BNB Hack 2026.">
+    <title>Zion Smart DCA — laboratório educacional e simulações</title>
+    <meta name="description" content="Protótipo educacional: simulador v4.2, motor Python v4.0 e resultados históricos experimentais. Dados públicos, indicadores simulados e contingências identificados.">
     <meta name="keywords" content="BNB Hack 2026, Smart DCA, Bitcoin, Fear and Greed, Crypto, AI, ERC-8004, BSC">
     <meta name="author" content="Cripto Zion — Rony Costa">
-    <meta property="og:title" content="Zion Smart DCA v4.2 — BNB Hack 2026">
+    <meta property="og:title" content="Zion Smart DCA — protótipo educacional">
     <meta property="og:description" content="AI-Powered Sentiment-Driven Bitcoin Accumulation Engine">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#00ff41">
@@ -1389,40 +1389,18 @@
         <div class="hero-content">
             <div class="hero-badge">
                 <i class="fa-solid fa-trophy"></i>
-                BNB Hack 2026 Submission
+                Protótipo educacional · Bitcoin
             </div>
             <h1 class="hero-title">
                 <span class="line1">Zion Smart DCA</span>
-                <span class="line2">Accumulation Engine</span>
-                <span class="line3">AI-Powered Sentiment-Driven Strategy v4.2</span>
+                <span class="line2">Laboratório de acumulação</span>
+                <span class="line3">Simulador v4.2 · motor Python v4.0</span>
             </h1>
             <p class="hero-subtitle">
-                Dynamically adjusts your Bitcoin DCA based on Fear & Greed Index,
-                on-chain data, and RSI context — maximizing accumulation in fear,
-                preserving capital in greed.
+                Estude aportes e cenários com dados públicos e indicadores simulados.
+                Este protótipo não executa investimentos nem comprova retorno real.
             </p>
-            <div class="hero-stats">
-                <div class="stat-pill">
-                    <i class="fa-solid fa-chart-line" style="color: var(--primary)"></i>
-                    <span>Return</span>
-                    <span class="value">+55.4%</span>
-                </div>
-                <div class="stat-pill">
-                    <i class="fa-solid fa-shield-halved" style="color: var(--secondary)"></i>
-                    <span>Sharpe</span>
-                    <span class="value">1.783</span>
-                </div>
-                <div class="stat-pill">
-                    <i class="fa-solid fa-bolt" style="color: var(--accent)"></i>
-                    <span>Sortino</span>
-                    <span class="value">4.453</span>
-                </div>
-                <div class="stat-pill">
-                    <i class="fa-solid fa-fire" style="color: var(--danger)"></i>
-                    <span>Max DD</span>
-                    <span class="value">-44.6%</span>
-                </div>
-            </div>
+            <p class="section-desc" role="note">Os resultados salvos são da v4.0, com divisão 70/30. O simulador visual v4.2 usa a base integral. Os dois experimentos não são equivalentes.</p>
             <div class="hero-cta">
                 <a href="#simulator" class="btn-primary">
                     <i class="fa-solid fa-play"></i>
@@ -1439,10 +1417,10 @@
     <!-- ==================== MARKET PANEL ==================== -->
     <section id="market">
         <div class="container">
-            <div class="section-label animate-on-scroll">Real-Time Market Data</div>
+            <div class="section-label animate-on-scroll">Dados públicos e indicadores simulados</div>
             <h2 class="section-title animate-on-scroll">Market Intelligence</h2>
             <p class="section-desc animate-on-scroll">
-                Live data feeds power the Zion engine's decision matrix. Auto-refreshes every 60 seconds.
+                Preço: CoinGecko. Sentimento: Alternative.me. RSI, SOPR e MVRV: simulações. Falhas usam valores demonstrativos identificados. Consulta a cada 60 segundos.
             </p>
             <div class="market-grid">
                 <div class="glass-card market-card animate-on-scroll stagger-1">
@@ -1451,6 +1429,7 @@
                     <div class="card-value" id="btcPrice">$—</div>
                     <div class="card-change" id="btcChange">Loading...</div>
                     <div class="card-sublabel" id="btcMarketCap">Market Cap: —</div>
+                    <div class="card-sublabel" id="btcSource">Fonte: aguardando consulta</div>
                 </div>
                 <div class="glass-card market-card animate-on-scroll stagger-2">
                     <div class="card-icon cyan"><i class="fa-solid fa-face-grimace"></i></div>
@@ -1458,6 +1437,7 @@
                     <div class="card-value" id="fgValue">—</div>
                     <div class="card-change" id="fgLabel" style="color: var(--text-dim)">Loading...</div>
                     <div class="card-sublabel" id="fgMultiplier">Multiplier: —</div>
+                    <div class="card-sublabel" id="fgSource">Fonte: aguardando consulta</div>
                 </div>
                 <div class="glass-card market-card animate-on-scroll stagger-3">
                     <div class="card-icon"><i class="fa-solid fa-wave-square"></i></div>
@@ -1749,10 +1729,10 @@
     <!-- ==================== BACKTEST RESULTS ==================== -->
     <section id="backtest">
         <div class="container">
-            <div class="section-label animate-on-scroll">Performance Proof</div>
-            <h2 class="section-title animate-on-scroll">Backtest Results (2021–2026)</h2>
+            <div class="section-label animate-on-scroll">Artefatos de simulação histórica</div>
+            <h2 class="section-title animate-on-scroll">Resultado salvo v4.0 — 01/01/2021 a 09/06/2026</h2>
             <p class="section-desc animate-on-scroll">
-                Zion Smart DCA vs Standard DCA — tested across a full market cycle including the 2022 crash and 2024–2025 recovery.
+                Resultado experimental com aportes diferentes entre métodos. Não comprova superioridade ou resultados reais. Alterar a base abaixo apenas escala números salvos; não executa outro backtest.
             </p>
             <div class="glass-card animate-on-scroll" style="padding: 20px; margin-bottom: 28px;">
                 <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
@@ -1763,14 +1743,14 @@
                     <div class="input-group" style="margin-bottom: 0; flex: 0 0 140px;">
                         <input type="number" id="backtestDCA" value="100" min="10" max="50000" step="10" style="text-align: center;">
                     </div>
-                    <span style="font-size: 13px; color: var(--text-dim);">USD / week — all values recalculate proportionally</span>
+                    <span style="font-size: 13px; color: var(--text-dim);">USD/semana — escala ilustrativa; não reexecuta o backtest</span>
                 </div>
             </div>
             <div class="backtest-grid">
                 <div class="glass-card backtest-card animate-on-scroll holographic-border">
                     <h3>
                         <span class="tag zion">ZION</span>
-                        Zion Smart DCA v4.2
+                        Zion Smart DCA v4.0 (resultado salvo)
                     </h3>
                     <div class="metric-grid">
                         <div class="metric-item">
@@ -1868,12 +1848,12 @@
             <div class="glass-card animate-on-scroll" style="padding: 28px; margin-bottom: 28px;">
                 <h3 style="font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--primary);">
                     <i class="fa-solid fa-crown" style="margin-right: 8px; color: var(--accent);"></i>
-                    Zion Smart DCA Advantages
+                    Diferenças no arquivo histórico — comparação não equivalente
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
                     <div style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
                         <i class="fa-solid fa-check-circle" style="color: var(--primary);"></i>
-                        <span><strong>+4.7%</strong> higher return</span>
+                        <span><strong>+4.7 pp</strong> diferença de retorno simulado</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
                         <i class="fa-solid fa-check-circle" style="color: var(--primary);"></i>
@@ -1881,7 +1861,7 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
                         <i class="fa-solid fa-check-circle" style="color: var(--primary);"></i>
-                        <span><strong>Better</strong> risk-adjusted returns</span>
+                        <span>Métricas históricas com premissas distintas</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
                         <i class="fa-solid fa-check-circle" style="color: var(--primary);"></i>
@@ -1899,13 +1879,14 @@
             </div>
             <!-- Chart -->
             <div class="glass-card chart-container animate-on-scroll">
+                <p class="section-desc">Curva ilustrativa gerada no navegador; não é série exportada do backtest.</p>
                 <canvas id="backtestChart"></canvas>
             </div>
             <!-- FINANCIAL SUMMARY -->
             <div class="glass-card animate-on-scroll" style="margin-top: 28px; padding: 28px;">
                 <h3 style="font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--primary);">
                     <i class="fa-solid fa-vault" style="margin-right: 8px;"></i>
-                    Financial Summary — Zion Smart DCA
+                    Cenário ilustrativo — hipóteses adicionais ao arquivo histórico
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                     <div class="glass-card" style="padding: 16px; text-align: center;">
@@ -1917,34 +1898,34 @@
                         <div id="finPortfolio" style="font-size: 24px; font-weight: 700; color: var(--primary); font-family: var(--font-display);">$39,570</div>
                     </div>
                     <div class="glass-card" style="padding: 16px; text-align: center;">
-                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Realized Profit (USD)</div>
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Diferença valor − aporte (simulada)</div>
                         <div id="finRealized" style="font-size: 24px; font-weight: 700; color: var(--primary); font-family: var(--font-display);">$14,108</div>
                         <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">+55.4% return</div>
                     </div>
                     <div class="glass-card" style="padding: 16px; text-align: center;">
-                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Scaling Out Cash</div>
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Saída hipotética de caixa</div>
                         <div id="finScalingCash" style="font-size: 24px; font-weight: 700; color: var(--accent); font-family: var(--font-display);">$4,741</div>
-                        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">12% of portfolio (2 signals)</div>
+                        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Hipótese de 12%; não representa vendas verificadas</div>
                     </div>
                     <div class="glass-card" style="padding: 16px; text-align: center;">
                         <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Buildup Reserve</div>
                         <div id="finReserve" style="font-size: 24px; font-weight: 700; color: var(--secondary); font-family: var(--font-display);">$3,820</div>
-                        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Dry powder for next cycle</div>
+                        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Hipótese de reserva adicional; não reconciliada no ledger</div>
                     </div>
                     <div class="glass-card" style="padding: 16px; text-align: center;">
-                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Stablecoin Yield (est.)</div>
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Rendimento hipotético, não realizado</div>
                         <div id="finYield" style="font-size: 24px; font-weight: 700; color: var(--accent); font-family: var(--font-display);">$306</div>
-                        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">~5% APY on idle reserve</div>
+                        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Hipótese de 5% ao ano; sem produto ou receita comprovados</div>
                     </div>
                 </div>
                 <div class="glow-line" style="margin: 20px 0;"></div>
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                     <div>
-                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Total Equity (Portfolio + Cash + Reserve + Yield)</div>
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Soma hipotética — não é patrimônio ou saldo confirmado</div>
                         <div id="finEquity" style="font-size: 32px; font-weight: 800; color: var(--primary); font-family: var(--font-display);">$48,437</div>
                     </div>
                     <div style="text-align: right;">
-                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Projected Reserve (no new deposits, 5% APY, 1yr)</div>
+                        <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Projeção ilustrativa da reserva, hipótese 5%/ano</div>
                         <div id="finProjected" style="font-size: 20px; font-weight: 700; color: var(--accent); font-family: var(--font-display);">$4,011</div>
                     </div>
                 </div>
@@ -2056,8 +2037,8 @@
                         <div class="logo-text" style="font-family: var(--font-display); font-weight: 700; font-size: 18px;">Cripto <span style="color: var(--primary);">Zion</span></div>
                     </div>
                     <p>
-                        Zion Smart DCA v4.2 — An AI-powered, sentiment-driven Bitcoin accumulation engine.
-                        Built for the BNB Hack 2026. Discipline over emotion. Strategy over speculation.
+                        Zion Smart DCA — protótipo educacional de decisões e cenários.
+                        Simulações e backtests não garantem retorno. Integrações autônomas exigem validação.
                     </p>
                 </div>
                 <div>
@@ -2111,6 +2092,9 @@
         cyclePhase: '',
         lastUpdate: null,
         apiOk: false,
+        fgApiOk: false,
+        btcFetchedAt: null,
+        fgFetchedAt: null,
         mouse: { x: 0, y: 0 },
         // Reference BTC price for Meta Reversa adaptive messages
         refBtcPrice: 104000,
@@ -2250,13 +2234,21 @@
     async function fetchBTCPrice() {
         try {
             const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_market_cap=true');
+            if (!res.ok) throw new Error('CoinGecko HTTP ' + res.status);
             const data = await res.json();
+            if (!data.bitcoin || !Number.isFinite(data.bitcoin.usd) || data.bitcoin.usd <= 0
+                || !Number.isFinite(data.bitcoin.usd_24h_change) || !Number.isFinite(data.bitcoin.usd_market_cap)) {
+                throw new Error('Cotacao invalida');
+            }
+            STATE.btcFetchedAt = new Date();
             STATE.btcPrice = data.bitcoin.usd;
             STATE.btcChange24h = data.bitcoin.usd_24h_change;
             STATE.btcMarketCap = data.bitcoin.usd_market_cap;
             STATE.apiOk = true;
         } catch (e) {
-            console.warn('CoinGecko API failed, using fallback:', e);
+            STATE.apiOk = false;
+            STATE.btcFetchedAt = null;
+            console.warn('CoinGecko API failed, using demonstration values:', e);
             STATE.btcPrice = FALLBACK.btcPrice;
             STATE.btcChange24h = FALLBACK.btcChange24h;
             STATE.btcMarketCap = FALLBACK.btcMarketCap;
@@ -2266,11 +2258,18 @@
     async function fetchFearGreed() {
         try {
             const res = await fetch('https://api.alternative.me/fng/');
+            if (!res.ok) throw new Error('Alternative.me HTTP ' + res.status);
             const data = await res.json();
-            STATE.fgIndex = parseInt(data.data[0].value);
+            const value = Number(data?.data?.[0]?.value);
+            if (!Number.isInteger(value) || value < 0 || value > 100) throw new Error('Sentimento invalido');
+            STATE.fgApiOk = true;
+            STATE.fgFetchedAt = new Date();
+            STATE.fgIndex = value;
             STATE.fgLabel = data.data[0].value_classification;
         } catch (e) {
-            console.warn('F&G API failed, using fallback:', e);
+            STATE.fgApiOk = false;
+            STATE.fgFetchedAt = null;
+            console.warn('F&G API failed, using demonstration values:', e);
             STATE.fgIndex = FALLBACK.fgIndex;
             STATE.fgLabel = FALLBACK.fgLabel;
         }
@@ -2341,6 +2340,10 @@
         updateUI();
     }
 
+    function rsiLabelSafe() {
+        return STATE.rsi < 30 ? 'Oversold' : STATE.rsi > 70 ? 'Overbought' : 'ilustrativo';
+    }
+
     // ===== UI UPDATE =====
     function updateUI() {
         // BTC Price
@@ -2406,15 +2409,19 @@
         // Cycle Phase
         document.getElementById('cyclePhase').textContent = STATE.cyclePhase;
 
-        // Live status
+        // Cada fonte mantém seu próprio estado; falha posterior nunca herda o selo anterior.
         const liveEl = document.getElementById('liveStatus');
-        if (STATE.apiOk) {
-            liveEl.textContent = 'Live';
-            liveEl.style.color = 'var(--primary)';
-        } else {
-            liveEl.textContent = 'Fallback';
-            liveEl.style.color = 'var(--warning)';
-        }
+        liveEl.textContent = STATE.apiOk && STATE.fgApiOk ? 'APIs públicas + simulações'
+            : STATE.apiOk || STATE.fgApiOk ? 'Fontes mistas + simulações' : 'Dados demonstrativos';
+        liveEl.style.color = STATE.apiOk && STATE.fgApiOk ? 'var(--primary)' : 'var(--warning)';
+        const consulted = d => d ? d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) + ' BRT' : '';
+        document.getElementById('btcSource').textContent = STATE.apiOk
+            ? 'CoinGecko · consultado ' + consulted(STATE.btcFetchedAt) : 'Demonstração · falha na fonte de preço';
+        document.getElementById('fgSource').textContent = STATE.fgApiOk
+            ? 'Alternative.me · consultado ' + consulted(STATE.fgFetchedAt) : 'Demonstração · falha na fonte de sentimento';
+        document.getElementById('rsiLabel').textContent = 'Simulado · ' + rsiLabelSafe();
+        document.getElementById('soprLabel').textContent = 'Simulado · sem leitura on-chain';
+        document.getElementById('mvrvLabel').textContent = 'Simulado · sem leitura on-chain';
 
         // Engine recommendation
         updateEngineRecommendation();
