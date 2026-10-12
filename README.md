@@ -312,8 +312,9 @@ print(result["result"]["decision"]["decision"]["multiplier"])  # 2.0
 
 ## Author
 
-**Rony Costa** ([@Fealtycripto](https://github.com/Fealtycripto))  
-Creator of [Cripto Zion](https://criptozion.xyz) — financial sovereignty tools for Brazilian crypto investors.
+**Rony Costa (Zion)** ([@Fealtycripto](https://github.com/Fealtycripto)), conhecido também como Fealty. Empreendedor, criador de conteúdo, fundador do [CriptoZion](https://criptozion.xyz) e criador da **Zion Smart DCA**, metodologia e projeto de software em evolução.
+
+Versão editorial **BIO-1.0**. [Minicurrículo público](https://github.com/Fealtycripto/Fealtycripto/blob/main/MINICURRICULO.md). A revisão biográfica não altera a versão operacional ou as regras descritas neste repositório.
 
 ---
 
