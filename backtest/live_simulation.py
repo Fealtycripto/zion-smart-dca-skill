@@ -21,6 +21,7 @@ from datetime import datetime
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from data_loader import download_btc_data, add_weekly_fear_greed
+from multipliers import DEFAULT_FG_MULTIPLIERS, fg_multiplier
 
 # ─── Config ──────────────────────────────────────────────────────────────────
 START_DATE   = "2026-02-13"
@@ -53,12 +54,8 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def get_multiplier(fg: float) -> float:
-    """Exact thresholds from Zion Smart DCA v4.0."""
-    if fg <= 24:   return 2.0   # Extreme Fear  (0-24)
-    elif fg <= 44: return 1.5   # Fear          (25-44)
-    elif fg <= 55: return 1.0   # Neutral       (45-55)
-    elif fg <= 74: return 0.75  # Greed         (56-74)
-    else:          return 0.5   # Extreme Greed (75-100)
+    """Current base for NEW runs; saved historical results are unchanged."""
+    return fg_multiplier(fg)
 
 
 def get_fg_label(fg: float) -> str:
