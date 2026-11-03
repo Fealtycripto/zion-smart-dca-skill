@@ -95,8 +95,8 @@ The F&G multiplier applies **directly** to your full DCA base amount. Surplus/de
 | 😱 Extreme Fear | 0–24 | **2.0x** | $200 | Extra FROM Reserve |
 | 😰 Fear | 25–44 | **1.5x** | $150 | Extra FROM Reserve |
 | 😐 Neutral | 45–55 | **1.0x** | $100 | No movement |
-| 😊 Greed | 56–74 | **0.75x** | $75 | Surplus TO Reserve |
-| 🤑 Extreme Greed | 75–100 | **0.5x** | $50 | Surplus TO Reserve |
+| 😊 Greed | 56–74 | **0.5x** | $50 | Surplus TO Reserve |
+| 🤑 Extreme Greed | 75–100 | **0.25x** | $25 | Surplus TO Reserve |
 
 > **v4.2 Change:** No more 70/30 budget split. The multiplier applies to 100% of your DCA base. Surplus from greed periods flows directly to the Buildup Reserve. Deficit during fear is funded from the reserve.
 
@@ -132,7 +132,7 @@ Work backwards from your BTC goal. Set a target (e.g., 0.5 BTC), timeline (e.g.,
 
 1. **DCA Base** — fixed amount per period (daily/weekly/biweekly/monthly), no excuses
 2. **RSI Buildup Trigger** — RSI < 35 + context filters (200WMA, MVRV, ATH%) activates Buildup mode
-3. **F&G Multiplier Scale** — 0.5x to 2.0x applied directly to full DCA base (v4.2)
+3. **F&G Multiplier Scale** — 0.25x to 2.0x applied directly to full DCA base (v4.2)
 4. **Buildup Reserve** — surplus from greed periods flows to reserve; deficit in fear draws from reserve
 5. **Never Sell Below PM** — never sell below average buy price (non-negotiable)
 6. **Income Scaling** — extra income ÷ 4 = DCA increase
@@ -179,3 +179,11 @@ Versão editorial **BIO-1.0**. [Minicurrículo público](https://github.com/Feal
 **English:** Experimental Bitcoin DCA tools: Python engine, educational dashboard, historical simulations, optional public-candle collector and locally validated MCP tools over caller-provided signals. Some indicators are simulated; external CMC MCP and on-chain settlement remain unvalidated. Saved backtests require version and cash-flow reconciliation before performance claims.
 
 Conteúdo educacional. Backtests não garantem retorno e não comprovam resultados reais.
+
+## Current base profile (2026-11-03)
+
+Extreme Fear **2x**, Fear **1.5x**, Neutral **1x**, Greed **0.5x**, Extreme Greed **0.25x**. These are starting parameters, not immutable rules or a universally suitable allocation. Investors can adapt them after reviewing their assets, liquidity, obligations and financial capacity. In Python, set `DCAConfig(fg_multipliers=(2.0, 1.5, 1.0, 0.5, 0.25))` to specify the five levels in that order. The dashboard currently displays the base profile rather than a personalized profile editor.
+
+**Implementation boundary:** the legacy Python v4.0 engine retains its existing 70/30 budget split and cycle/risk adjustments; a final engine multiplier can differ from the sentiment base. The v4.2 dashboard description uses the full DCA base. This correction aligns sentiment defaults, not those separate budget models.
+
+Saved backtest reports, CSV/JSON results and screenshots have **not** been recalculated for this corrected base. They are historical artifacts, not validation of the current profile. New simulation runs use the corrected defaults.
