@@ -150,13 +150,13 @@ but modulates them (e.g., in Accumulation phase, Extreme Fear buys harder).
 | 0–24 | 2.0x |
 | 25–44 | 1.5x |
 | 45–55 | 1.0x |
-| 56–74 | 0.75x |
-| 75–100 | 0.5x |
+| 56–74 | 0.5x |
+| 75–100 | 0.25x |
 
 **Why the change?**
 1. **Wider Extreme Fear band (0–24 vs 0–20):** Captures more accumulation opportunities during fear. F&G values 21–24 historically still represent strong buying conditions.
 2. **Narrower Neutral band (45–55 vs 41–60):** The old neutral band was too wide, capturing mild fear/greed as neutral. The tighter band keeps 1.0x for truly neutral conditions.
-3. **Softer Greed multipliers (0.75x/0.5x vs 0.5x/0.25x):** v3.0 was too aggressive in reducing during greed. Historical analysis showed 0.25x caused under-accumulation in periods that turned out to be temporary greed spikes. The v4.0 softer cuts maintain more consistent accumulation.
+3. **Current base, corrected 2026-11-03:** Greed is 0.5x and Extreme Greed is 0.25x. Investors may customize all five levels after a financial/patrimonial assessment. Previously saved backtests have not been recalculated for this correction.
 
 ---
 
@@ -164,10 +164,10 @@ but modulates them (e.g., in Accumulation phase, Extreme Fear buys harder).
 
 **Design choice, not a limitation.**
 
-5 discrete levels (0.5x / 0.75x / 1.0x / 1.5x / 2.0x) were chosen deliberately because:
+5 discrete levels (0.25x / 0.5x / 1.0x / 1.5x / 2.0x) were chosen deliberately because:
 1. **Psychological clarity** — users need to understand exactly what the system is doing
 2. **Execution discipline** — "buy double this week" is actionable; a continuous function isn't
-3. **Backtested stability** — the 5-band system performs consistently across all market cycles
+3. **Configurable base** — five transparent starting levels can be adapted to the investor; historical results do not validate the corrected profile
 
 ---
 

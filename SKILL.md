@@ -53,7 +53,7 @@ open dashboard/index.html
 | `--frequency` | weekly | DCA frequency: `daily`, `weekly`, `biweekly`, `monthly` |
 | `--rsi-threshold` | 35 | RSI level to trigger Buildup mode |
 | `--fg-extreme-fear` | 24 | F&G at or below this = 2.0x multiplier |
-| `--fg-extreme-greed` | 75 | F&G at or above this = 0.5x multiplier |
+| `--fg-extreme-greed` | 75 | F&G at or above this = 0.25x multiplier |
 | `--avg-price` | 0.0 | Average buy price USD (Rule 5: never sell below PM) |
 
 ## Output / Performance Metrics (5-Year Backtest 2021–2026)
@@ -136,8 +136,8 @@ The multiplier applies **directly** to 100% of your DCA base. No 70/30 split.
 | 0–24 | 😱 Extreme Fear | **2.0x** | $200 | Extra FROM Reserve |
 | 25–44 | 😰 Fear | **1.5x** | $150 | Extra FROM Reserve |
 | 45–55 | 😐 Neutral | **1.0x** | $100 | No movement |
-| 56–74 | 😊 Greed | **0.75x** | $75 | Surplus TO Reserve |
-| 75–100 | 🤑 Extreme Greed | **0.5x** | $50 | Surplus TO Reserve |
+| 56–74 | 😊 Greed | **0.5x** | $50 | Surplus TO Reserve |
+| 75–100 | 🤑 Extreme Greed | **0.25x** | $25 | Surplus TO Reserve |
 
 ## Risks & Caveats
 
@@ -154,7 +154,7 @@ The multiplier applies **directly** to 100% of your DCA base. No 70/30 split.
 |---|------|---------|
 | 1 | DCA Base | Every period (daily/weekly/biweekly/monthly) |
 | 2 | RSI Buildup | RSI < 35 + context filters |
-| 3 | F&G Multiplier | 0.5x–2.0x applied directly to full base (v4.2) |
+| 3 | F&G Multiplier | 0.25x–2.0x applied directly to full base (v4.2) |
 | 4 | Buildup Reserve | Surplus TO reserve in greed, deficit FROM reserve in fear |
 | 5 | Never Sell Below PM | Avg buy price floor (non-negotiable) |
 | 6 | Income Scaling | Income change |
@@ -184,3 +184,11 @@ MIT — See [LICENSE](LICENSE)
 
 *BNB Hack 2026 | Track 2: Strategy Skills*
 *CoinMarketCap × BNB Chain × Trust Wallet*
+
+## Current base profile (2026-11-03)
+
+Extreme Fear **2x**, Fear **1.5x**, Neutral **1x**, Greed **0.5x**, Extreme Greed **0.25x**. These are starting parameters, not immutable rules or a universally suitable allocation. Investors can adapt them after reviewing their assets, liquidity, obligations and financial capacity. In Python, set `DCAConfig(fg_multipliers=(2.0, 1.5, 1.0, 0.5, 0.25))` to specify the five levels in that order. The dashboard currently displays the base profile rather than a personalized profile editor.
+
+**Implementation boundary:** the legacy Python v4.0 engine retains its existing 70/30 budget split and cycle/risk adjustments; a final engine multiplier can differ from the sentiment base. The v4.2 dashboard description uses the full DCA base. This correction aligns sentiment defaults, not those separate budget models.
+
+Saved backtest reports, CSV/JSON results and screenshots have **not** been recalculated for this corrected base. They are historical artifacts, not validation of the current profile. New simulation runs use the corrected defaults.

@@ -1950,7 +1950,7 @@
                         Sentiment-weighted accumulation. The F&G multiplier adjusts your DCA directly —
                         buying more in fear, conserving in greed. Surplus flows to the Buildup Reserve.
                     </p>
-                    <div class="pillar-detail"><i class="fa-solid fa-check"></i> F&G multiplier: 0.5x – 2.0x</div>
+                    <div class="pillar-detail"><i class="fa-solid fa-check"></i> F&G base multiplier: 0.25x – 2.0x. Personalize after a financial/patrimonial assessment; this dashboard displays the base profile.</div>
                     <div class="pillar-detail"><i class="fa-solid fa-check"></i> No 70/30 split — direct application</div>
                     <div class="pillar-detail"><i class="fa-solid fa-check"></i> Auto reserve management (Rule 7)</div>
                     <div class="pillar-detail"><i class="fa-solid fa-check"></i> Weekly execution cycle</div>
@@ -2117,8 +2117,8 @@
         { min: 0,  max: 24,  label: 'Extreme Fear',  multiplier: 2.0,  color: '#00ff88', zone: 'zone-extreme-fear', reserveFlow: 'from-reserve', flowText: 'Extra FROM Reserve' },
         { min: 25, max: 44,  label: 'Fear',           multiplier: 1.5,  color: '#00c864', zone: 'zone-fear',         reserveFlow: 'from-reserve', flowText: 'Extra FROM Reserve' },
         { min: 45, max: 55,  label: 'Neutral',        multiplier: 1.0,  color: '#888888', zone: 'zone-neutral',      reserveFlow: 'no-movement', flowText: 'No movement' },
-        { min: 56, max: 74,  label: 'Greed',          multiplier: 0.75, color: '#ff8800', zone: 'zone-greed',        reserveFlow: 'to-reserve',   flowText: 'Surplus TO Reserve' },
-        { min: 75, max: 100, label: 'Extreme Greed',  multiplier: 0.5,  color: '#ff4444', zone: 'zone-extreme-greed', reserveFlow: 'to-reserve',   flowText: 'Surplus TO Reserve' }
+        { min: 56, max: 74,  label: 'Greed',          multiplier: 0.5, color: '#ff8800', zone: 'zone-greed',        reserveFlow: 'to-reserve',   flowText: 'Surplus TO Reserve' },
+        { min: 75, max: 100, label: 'Extreme Greed',  multiplier: 0.25,  color: '#ff4444', zone: 'zone-extreme-greed', reserveFlow: 'to-reserve',   flowText: 'Surplus TO Reserve' }
     ];
 
     // ===== UTILITY FUNCTIONS =====
@@ -2510,7 +2510,7 @@
             cssClass = 'hold';
             headline = 'Standard Accumulation';
             reasoning = `Market sentiment is neutral (F&G: ${STATE.fgIndex}). Your DCA runs at its standard base rate — no multiplier adjustment, no reserve movement. If your DCA is $100/week, it stays at $100/week. This is the baseline rhythm of the strategy.`;
-        } else if (zone.multiplier >= 0.75) {
+        } else if (zone.multiplier >= 0.5) {
             action = 'REDUCE';
             cssClass = 'hold';
             headline = 'Capital Conservation Mode';
@@ -2519,7 +2519,7 @@
             action = 'MINIMAL DCA';
             cssClass = 'sell';
             headline = 'Maximum Conservation';
-            reasoning = `Extreme greed detected (F&G: ${STATE.fgIndex}). The engine cuts your DCA to just ${zone.multiplier}x of your base — a $100 DCA becomes only $${(100 * zone.multiplier).toFixed(0)}. Half of your budget is preserved in the Buildup Reserve. When fear returns, this reserve will fuel 1.5x–2.0x multiplied accumulation. ${STATE.rsi > 70 ? 'RSI weekly is elevated — Scaling Out protocol may trigger partial sell signals.' : ''}`;
+            reasoning = `Extreme greed detected (F&G: ${STATE.fgIndex}). The engine cuts your DCA to just ${zone.multiplier}x of your base — a $100 DCA becomes only $${(100 * zone.multiplier).toFixed(0)}. The unused portion of your DCA budget is preserved in the Buildup Reserve. When fear returns, this reserve will fuel 1.5x–2.0x multiplied accumulation. ${STATE.rsi > 70 ? 'RSI weekly is elevated — Scaling Out protocol may trigger partial sell signals.' : ''}`;
         }
 
         statusEl.className = 'rec-status ' + cssClass;
@@ -2750,8 +2750,8 @@
         if (speedRatio >= 2.0) { speedLabel = '2.0x — Maximum'; speedColor = '#00ff41'; }
         else if (speedRatio >= 1.5) { speedLabel = '1.5x — Accelerated'; speedColor = '#00cc33'; }
         else if (speedRatio >= 1.0) { speedLabel = '1.0x — Standard'; speedColor = '#888'; }
-        else if (speedRatio >= 0.75) { speedLabel = '0.75x — Conserving'; speedColor = '#ff8800'; }
-        else { speedLabel = '0.5x — Building Reserve'; speedColor = '#ff4444'; }
+        else if (speedRatio >= 0.5) { speedLabel = '0.5x — Conserving'; speedColor = '#ff8800'; }
+        else { speedLabel = '0.25x — Building Reserve'; speedColor = '#ff4444'; }
 
         // ETA adjustment
         let etaLabel, etaColor;
@@ -2776,7 +2776,7 @@
         if (zone.multiplier >= 1.5) { actionText = 'STRONG BUY'; actionColor = '#00ff41'; }
         else if (zone.multiplier > 1.0) { actionText = 'BUY'; actionColor = '#00cc33'; }
         else if (zone.multiplier === 1.0) { actionText = 'HOLD DCA'; actionColor = '#888'; }
-        else if (zone.multiplier >= 0.75) { actionText = 'REDUCE'; actionColor = '#ff8800'; }
+        else if (zone.multiplier >= 0.5) { actionText = 'REDUCE'; actionColor = '#ff8800'; }
         else { actionText = 'MINIMUM'; actionColor = '#ff4444'; }
 
         statusEl.textContent = actionText + ' — F&G ' + STATE.fgIndex;
