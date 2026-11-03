@@ -23,6 +23,7 @@ from datetime import datetime
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from data_loader import download_btc_data, add_weekly_fear_greed
+from multipliers import DEFAULT_FG_MULTIPLIERS, fg_multiplier
 
 RESULTS_PATH = Path(__file__).parent / "results_summary.json"
 REPORT_PATH  = Path(__file__).parent / "report.md"
@@ -31,12 +32,9 @@ REPORT_PATH  = Path(__file__).parent / "report.md"
 # ─── Strategy implementations ────────────────────────────────────────────────
 
 def get_fg_multiplier(fg: int, cfg: dict) -> float:
-    """Exact thresholds from Zion Smart DCA v4.0 (ZION-SMART-DCA-REGRAS.md)."""
-    if fg <= cfg["fg_extreme_fear"]:  return 2.0    # 0-24: Extreme Fear
-    elif fg <= cfg["fg_fear_top"]:    return 1.5    # 25-44: Fear
-    elif fg <= cfg["fg_neutral_top"]: return 1.0    # 45-55: Neutral
-    elif fg <= cfg["fg_greed_top"]:   return 0.75   # 56-74: Greed
-    else:                             return 0.5    # 75-100: Extreme Greed
+    """Current configurable base for NEW runs; saved historical results are unchanged."""
+    thresholds = tuple(cfg[k] for k in ("fg_extreme_fear", "fg_fear_top", "fg_neutral_top", "fg_greed_top"))
+    return fg_multiplier(fg, cfg.get("fg_multipliers", DEFAULT_FG_MULTIPLIERS), thresholds)
 
 
 def run_zion_dca(df_weekly: pd.DataFrame, cfg: dict) -> pd.DataFrame:
@@ -319,8 +317,8 @@ def main():
         "fg_extreme_fear":      24,    # F&G 0-24   -> 2.0x
         "fg_fear_top":          44,    # F&G 25-44  -> 1.5x
         "fg_neutral_top":       55,    # F&G 45-55  -> 1.0x
-        "fg_greed_top":         74,    # F&G 56-74  -> 0.75x
-        # F&G 75-100 -> 0.5x (Extreme Greed)
+        "fg_greed_top":         74,    # F&G 56-74  -> 0.5x
+        # F&G 75-100 -> 0.25x (Extreme Greed)
         "start_date":           args.start,
         "end_date":             datetime.today().strftime("%Y-%m-%d"),
     }
