@@ -14,7 +14,11 @@ IMPORTANT — Flexibility by design:
 """
 
 from dataclasses import dataclass, field
-from typing import Optional, List
+from typing import Optional, List, Tuple
+if __package__:
+    from .multipliers import DEFAULT_FG_MULTIPLIERS, FG_LABELS, fg_multiplier, get_fg_band
+else:
+    from multipliers import DEFAULT_FG_MULTIPLIERS, FG_LABELS, fg_multiplier, get_fg_band
 from enum import Enum
 from datetime import datetime, timedelta, timezone
 
@@ -109,8 +113,10 @@ class DCAConfig:
     fg_extreme_fear:       int   = 24      # F&G 0-24  -> 2.0x
     fg_fear_top:           int   = 44      # F&G 25-44 -> 1.5x
     fg_neutral_top:        int   = 55      # F&G 45-55 -> 1.0x
-    fg_greed_top:          int   = 74      # F&G 56-74 -> 0.75x
-    # F&G 75-100 -> 0.5x
+    fg_greed_top:          int   = 74      # F&G 56-74 -> 0.5x
+    # F&G 75-100 -> 0.25x
+    # Base profile, adjustable after an investor financial/patrimonial assessment.
+    fg_multipliers: Tuple[float, ...] = DEFAULT_FG_MULTIPLIERS
 
     # RSI thresholds
     rsi_buildup_threshold:     float = 35.0   # RSI daily < 35 = Buildup eligible
@@ -291,27 +297,13 @@ class ZionSmartDCA:
     # ─── Pillar 1: F&G Multiplier (Rule 2) ────────────────────────────────
 
     def _get_fg_multiplier(self, fg: int) -> tuple:
-        """
-        Rule 2 — Scale DCA amount by Fear & Greed Index.
-        Source: Zion Smart DCA OFFICIAL v4.0 (ZION-SMART-DCA-REGRAS.md)
-
-        F&G  0-24  (Extreme Fear)  -> 2.0x  — maximum accumulation
-        F&G 25-44  (Fear)          -> 1.5x  — above-average accumulation
-        F&G 45-55  (Neutral)       -> 1.0x  — standard DCA
-        F&G 56-74  (Greed)         -> 0.75x — reduce exposure, build reserve
-        F&G 75-100 (Extreme Greed) -> 0.5x  — minimum exposure, max reserve
-        """
+        """Return the configurable base profile, before cycle/risk adjustments."""
         cfg = self.config
-        if fg <= cfg.fg_extreme_fear:        # 0-24
-            return 2.0,  f"Extreme Fear (F&G={fg}, 0-24) -> 2.0x — maximum accumulation"
-        elif fg <= cfg.fg_fear_top:          # 25-44
-            return 1.5,  f"Fear (F&G={fg}, 25-44) -> 1.5x — above-average accumulation"
-        elif fg <= cfg.fg_neutral_top:       # 45-55
-            return 1.0,  f"Neutral (F&G={fg}, 45-55) -> 1.0x — standard DCA"
-        elif fg <= cfg.fg_greed_top:         # 56-74
-            return 0.75, f"Greed (F&G={fg}, 56-74) -> 0.75x — reducing exposure, building reserve"
-        else:                                # 75-100
-            return 0.5,  f"Extreme Greed (F&G={fg}, 75-100) -> 0.5x — minimum exposure, max reserve"
+        thresholds = (cfg.fg_extreme_fear, cfg.fg_fear_top,
+                      cfg.fg_neutral_top, cfg.fg_greed_top)
+        multiplier = fg_multiplier(fg, cfg.fg_multipliers, thresholds)
+        label = FG_LABELS[get_fg_band(fg, thresholds)]
+        return multiplier, f"{label} (F&G={fg}) -> {multiplier:g}x — configured base profile"
 
     # ─── Pillar 2: Buildup (Rule 3) ───────────────────────────────────────
 
@@ -603,7 +595,7 @@ class ZionSmartDCA:
         # Apply cycle adjustment to multiplier
         if cycle_adj != 0:
             original = multiplier
-            multiplier = max(0.5, multiplier + cycle_adj)
+            multiplier = max(min(cfg.fg_multipliers), multiplier + cycle_adj)
             reasoning.append(
                 f"Pillar 0 adjustment: {original}x -> {multiplier}x "
                 f"(cycle phase: {phase.value})"
